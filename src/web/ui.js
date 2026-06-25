@@ -50,6 +50,21 @@ const App = (() => {
     ).join("");
   }
 
+  // ── Compute best column count for even grid rows ────────────────
+  function bestCols(n) {
+    if (n <= 1) return 1;
+    const maxC = Math.min(n, 5);            // cap at 5 per row for width
+    let best = maxC, bestScore = Infinity;
+    for (let c = maxC; c >= 1; c--) {
+      const rows = Math.ceil(n / c);
+      const last = n - (rows - 1) * c;       // cards in the last row
+      const evenness = (last === c) ? 0 : (c - last);
+      const score = evenness * 10 - c;       // prefer even rows, then more columns
+      if (score < bestScore) { bestScore = score; best = c; }
+    }
+    return best;
+  }
+
   // ── Render city cards grid ─────────────────────────────────────
   function renderCities(rows) {
     const sk = sortKey();
@@ -62,6 +77,9 @@ const App = (() => {
       grid.innerHTML = '<div class="empty-state">No delays match the current filters.</div>';
       return;
     }
+
+    // Set grid columns based on city count
+    grid.style.gridTemplateColumns = "repeat(" + bestCols(sorted.length) + ", 1fr)";
 
     grid.innerHTML = sorted.map(row => {
       const cityName = row.key[0];

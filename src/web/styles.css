@@ -290,19 +290,12 @@ button.clear-btn:hover { background: var(--bg); }
 }
 
 /* ── Cards grid ──────────────────────────────────────────────── */
-/* CHANGE 3: fixed 5-column equal-count grid, compact city cards */
+/* Column count set dynamically by JavaScript based on city count */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
   gap: 12px;
   padding: 10px 20px 20px;
   width: 100%;
-}
-@media (max-width: 1100px) {
-  .cards-grid { grid-template-columns: repeat(4, 1fr); }
-}
-@media (max-width: 800px) {
-  .cards-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* ── Data card — compact secondary ──────────────────────────── */
