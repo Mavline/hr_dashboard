@@ -1,5 +1,5 @@
 <!doctype html>
-<html dir="auto">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Bus Delays Dashboard</title>
@@ -7,14 +7,17 @@
 </head>
 <body>
   <header>
-    <strong>Bus Delays Dashboard</strong>
+    <span class="app-title">Bus Delays Dashboard</span>
+    <div class="spacer"></div>
     <button id="btn-refresh" class="secondary">Refresh</button>
     <button id="btn-file" class="secondary">Change file…</button>
-    <button id="btn-export">Export</button>
+    <button id="btn-export" class="primary">Export</button>
     <span class="path" id="path">—</span>
   </header>
-  <section class="cards" id="cards"></section>
-  <section class="filters" id="filters">
+
+  <section class="totals-strip" id="totals-strip"></section>
+
+  <section class="controls">
     <label>View by
       <select id="view">
         <option value="employee">Employee</option>
@@ -24,11 +27,19 @@
         <option value="weekday">Weekday</option>
       </select>
     </label>
+    <label>Sort by
+      <select id="sort-by">
+        <option value="total_late">Total Late</option>
+        <option value="cases">Cases</option>
+        <option value="avg_late">Avg Late</option>
+      </select>
+    </label>
     <label>Employee <input id="f-emp" type="search" placeholder="name / no"></label>
     <label>From <input id="f-from" type="date"></label>
     <label>To <input id="f-to" type="date"></label>
   </section>
-  <table id="grid"><thead></thead><tbody></tbody></table>
+
+  <div class="cards-grid" id="cards-grid"></div>
 
   <script src="mock.js"></script>
   <script src="ui.js"></script>
