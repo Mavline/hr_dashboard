@@ -367,6 +367,11 @@ button.clear-btn:hover { background: var(--bg); }
   white-space: nowrap;
   flex-shrink: 0;
 }
+.d-card .cases-badge.cases-badge-neutral {
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
 .d-card .card-sub {
   font-size: 11px;
   color: var(--muted);
@@ -430,6 +435,7 @@ button.clear-btn:hover { background: var(--bg); }
 .bar-fill.sev-ok   { background: var(--ok); }
 .bar-fill.sev-warn { background: var(--warn); }
 .bar-fill.sev-bad  { background: var(--bad); }
+.bar-fill-neutral { background: var(--border); }
 .d-card .card-foot {
   font-size: 10px;
   color: var(--muted);

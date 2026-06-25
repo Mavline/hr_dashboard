@@ -62,7 +62,7 @@ def cities_full(roster, records):
             "routes": len({r["route"] for r in recs}),
         })
 
-    out.sort(key=lambda x: (x["total_late"], x["cases"]), reverse=True)
+    out.sort(key=lambda x: (-x["total_late"], -x["cases"], x["key"][0]))
     return out
 
 
