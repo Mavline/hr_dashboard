@@ -1,9 +1,15 @@
 import json
 import os
+import sys
 
-CONFIG_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config.json"
-)
+if getattr(sys, "frozen", False):
+    # Упакованный .exe: храним config рядом с исполняемым файлом, чтобы путь
+    # переживал перезапуск (_MEIPASS — временная распаковка, не годится).
+    _BASE = os.path.dirname(sys.executable)
+else:
+    # Запуск из исходников: корень проекта.
+    _BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CONFIG_PATH = os.path.join(_BASE, "config.json")
 
 def get_source_path():
     try:
