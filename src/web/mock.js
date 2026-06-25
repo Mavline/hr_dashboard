@@ -8,14 +8,14 @@ window.MOCK_STATE = {
 };
 
 window.MOCK_DASHBOARD = {
-  totals: { cases: 53, total_late: 1117, employees: 8, routes: 5, days: 7 },
+  totals: { cases: 59, total_late: 1048, employees: 15, routes: 5, days: 8 },
   by_city: [
-    { key: ["יהוד"],       cases: 9,  total_late: 213, avg_late: 23.7, employees: 2, routes: 2 },
-    { key: ["אריאל"],      cases: 7,  total_late: 187, avg_late: 26.7, employees: 1, routes: 1 },
-    { key: ["רמת גן"],     cases: 11, total_late: 172, avg_late: 15.6, employees: 2, routes: 1 },
-    { key: ["לוד"],        cases: 6,  total_late: 144, avg_late: 24.0, employees: 2, routes: 2 },
-    { key: ["פתח תקווה"],  cases: 12, total_late: 241, avg_late: 20.1, employees: 2, routes: 2 },
-    { key: ["נתניה"],      cases: 8,  total_late: 160, avg_late: 20.0, employees: 1, routes: 1 }
+    { key: ["יהוד"],       cases: 12, total_late: 267, avg_late: 22.3, employees: 3, routes: 2 },
+    { key: ["אריאל"],      cases: 5,  total_late: 109, avg_late: 21.8, employees: 2, routes: 1 },
+    { key: ["רמת גן"],     cases: 9,  total_late: 149, avg_late: 16.6, employees: 2, routes: 1 },
+    { key: ["לוד"],        cases: 6,  total_late: 108, avg_late: 18.0, employees: 3, routes: 1 },
+    { key: ["פתח תקווה"],  cases: 16, total_late: 309, avg_late: 19.3, employees: 3, routes: 2 },
+    { key: ["נתניה"],      cases: 11, total_late: 215, avg_late: 19.5, employees: 2, routes: 1 }
   ],
   by_date: [
     { key: ["2026-06-01"], cases: 8,  total_late: 166, avg_late: 20.8, employees: 5, routes: 3 },
