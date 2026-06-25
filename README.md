@@ -16,8 +16,10 @@ packaged into a standalone executable with PyInstaller.
 
 ## Build the executable
 ```
-pyinstaller --onedir --noconsole --add-data "src/web;web" --name razvozki src/main.py
+pyinstaller --onedir --noconsole --icon bus.ico --add-data "src/web;web" --name BusDelaysDashboard src/main.py
 ```
+On Windows Defender may flag an unsigned PyInstaller build; add the output
+folder to Defender exclusions (or sign the executable) so it runs.
 The resulting `dist/razvozki/` folder is self-contained — **Python is not required on
 target machines** (only WebView2, preinstalled on Windows 11). The app stores
 `config.json` (the saved path to the source file) next to the executable, so it
