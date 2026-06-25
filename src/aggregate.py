@@ -37,11 +37,12 @@ def aggregate_by(records, view):
     out = []
     for key, recs in groups.items():
         late = [x["late_min"] for x in recs]
+        total = sum(late)
         out.append({
             "key": list(key),
             "cases": len(recs),
-            "total_late": sum(late),
-            "avg_late": round(sum(late) / len(late), 1),
+            "total_late": total,
+            "avg_late": round(total / len(late), 1),
             "employees": len({x["employee_no"] for x in recs}),
             "routes": len({x["route"] for x in recs}),
         })
