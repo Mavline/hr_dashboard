@@ -131,7 +131,7 @@ const App = (() => {
       if (api()) { await api().refresh(); await render(); }
     };
     document.getElementById("btn-export").onclick = async () => {
-      if (api()) await api().export(filt(), view(), "xlsx");
+      if (api()) { await api().export(filt(), view(), "xlsx"); await render(); }
     };
   }
 
@@ -139,7 +139,7 @@ const App = (() => {
     init() { wire(); render(); },
     needFile() {
       document.getElementById("path").textContent =
-        "No file selected — use “Change file…”";
+        'No file selected — use "Change file…"';
     },
     render,
   };
