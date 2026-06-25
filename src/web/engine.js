@@ -94,7 +94,7 @@
     for (const name of workbook.SheetNames) {
       const ws = workbook.Sheets[name];
       // sheet_to_json with header:1 → array-of-arrays
-      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: null });
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, cellDates: true, defval: null });
       if (rows.length >= 2) {
         const headerRow = rows[1]; // row index 1 = Excel row 2
         if (headerRow && headerRow.some(c => metaKeys.includes(c))) {
