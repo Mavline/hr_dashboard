@@ -91,14 +91,6 @@ const App = (() => {
       );
     }).join("");
 
-    // Wire click delegation on the grid (re-attach each render)
-    grid.addEventListener("click", function onGridClick(e) {
-      const card = e.target.closest(".d-card[data-city]");
-      if (!card) return;
-      const city = card.dataset.city;
-      selectedCity = (selectedCity === city) ? null : city;
-      render();
-    }, { once: true });
   }
 
   // ── Render employees table ─────────────────────────────────────
@@ -201,6 +193,15 @@ const App = (() => {
 
     wireAutocomplete();
 
+    // City card click delegation (wired once at init)
+    document.getElementById("cards-grid").addEventListener("click", e => {
+      const card = e.target.closest(".d-card[data-city]");
+      if (!card) return;
+      const city = card.dataset.city;
+      selectedCity = (selectedCity === city) ? null : city;
+      render();
+    });
+
     // Sort-by: re-render (no API fetch needed — renderCities re-sorts in memory)
     document.getElementById("sort-by").addEventListener("change", render);
 
@@ -231,16 +232,16 @@ const App = (() => {
     });
 
     // Change file
-    document.getElementById("btn-file").addEventListener("click", async () => {
+    document.getElementById("btn-file").onclick = async () => {
       if (api()) {
         const newState = await api().choose_file();
         if (newState) {
           _state = { employees: newState.employees || [], source_path: newState.source_path || null };
           document.getElementById("path").textContent = _state.source_path || "—";
         }
-        await render();
       }
-    });
+      await render();
+    };
 
     // Export
     document.getElementById("btn-export").addEventListener("click", async () => {
