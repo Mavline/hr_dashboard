@@ -18,15 +18,6 @@
   <section class="totals-strip" id="totals-strip"></section>
 
   <section class="controls">
-    <label>View by
-      <select id="view">
-        <option value="employee">Employee</option>
-        <option value="route">Route</option>
-        <option value="date">Date</option>
-        <option value="week">Week</option>
-        <option value="weekday">Weekday</option>
-      </select>
-    </label>
     <label>Sort by
       <select id="sort-by">
         <option value="total_late">Total Late</option>
@@ -42,10 +33,34 @@
     </label>
     <label>From <input id="f-from" type="date"></label>
     <label>To <input id="f-to" type="date"></label>
+    <label class="clear-wrap">
+      <span class="label-spacer">&nbsp;</span>
+      <button id="btn-clear" class="secondary clear-btn">Clear</button>
+    </label>
   </section>
 
-  <div class="cards-area" id="cards-area">
+  <div class="scroll-area" id="scroll-area">
     <div class="cards-grid" id="cards-grid"></div>
+
+    <section class="emp-table-section">
+      <h2 class="section-heading">Employees</h2>
+      <div class="table-wrap">
+        <table id="emp-table" class="emp-table">
+          <thead>
+            <tr>
+              <th>Employee No</th>
+              <th>Last Name</th>
+              <th>First Name</th>
+              <th>City</th>
+              <th>Route</th>
+              <th>Cases</th>
+              <th>Total Late (min)</th>
+            </tr>
+          </thead>
+          <tbody id="emp-tbody"></tbody>
+        </table>
+      </div>
+    </section>
   </div>
 
   <script src="mock.js"></script>

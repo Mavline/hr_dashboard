@@ -1,19 +1,34 @@
-window.MOCK_VIEW = {
-  state: {
-    source_path: "C:\\...\\HR report.xlsx",
-    date_min: "2026-06-01", date_max: "2026-06-07",
-    cities: ["יהוד", "אריאל", "לוד"], routes: ["פתח תקווה", "יהוד- קרית אונו", "לוד"],
-    employees: ["בוטוב ילנה", "interim-placeholder", "כהן דוד", "לוי מרים", "שאמלי אלונה"]
-  },
-  totals: { cases: 53, total_late: 1117, employees: 46, routes: 3, days: 7 },
-  rows: [
-    { key: [12, "אלונה", "שאמלי", "יהוד", "יהוד- קרית אונו"],
-      cases: 4, total_late: 118, avg_late: 29.5, employees: 1, routes: 1 },
-    { key: [370, "ילנה", "בוטוב", "אריאל", "פתח תקווה"],
-      cases: 3, total_late: 61, avg_late: 20.3, employees: 1, routes: 1 },
-    { key: [88, "דוד", "כהן", "לוד", "לוד"],
-      cases: 2, total_late: 22, avg_late: 11.0, employees: 1, routes: 1 },
-    { key: [205, "מרים", "לוי", "יהוד", "פתח תקווה"],
-      cases: 5, total_late: 95, avg_late: 19.0, employees: 1, routes: 1 }
+window.MOCK_STATE = {
+  source_path: "C:\\...\\HR report.xlsx",
+  date_min: "2026-06-01",
+  date_max: "2026-06-07",
+  cities: ["אריאל", "יהוד", "לוד", "רמת גן", "פתח תקווה", "נתניה"],
+  routes: ["פתח תקווה", "יהוד- קרית אונו", "לוד", "רמת גן מרכז", "נתניה דרום"],
+  employees: ["אבו-עמר עלי", "בוטוב ילנה", "כהן דוד", "לוי מרים", "שאמלי אלונה", "פרץ יוסי", "גרין נועה", "רוזן משה"]
+};
+
+window.MOCK_DASHBOARD = {
+  totals: { cases: 53, total_late: 1117, employees: 8, routes: 5, days: 7 },
+  by_city: [
+    { key: ["יהוד"],       cases: 9,  total_late: 213, avg_late: 23.7, employees: 2, routes: 2 },
+    { key: ["אריאל"],      cases: 7,  total_late: 187, avg_late: 26.7, employees: 1, routes: 1 },
+    { key: ["רמת גן"],     cases: 11, total_late: 172, avg_late: 15.6, employees: 2, routes: 1 },
+    { key: ["לוד"],        cases: 6,  total_late: 144, avg_late: 24.0, employees: 2, routes: 2 },
+    { key: ["פתח תקווה"],  cases: 12, total_late: 241, avg_late: 20.1, employees: 2, routes: 2 },
+    { key: ["נתניה"],      cases: 8,  total_late: 160, avg_late: 20.0, employees: 1, routes: 1 }
+  ],
+  by_date: [
+    { key: ["2026-06-01"], cases: 8,  total_late: 166, avg_late: 20.8, employees: 5, routes: 3 },
+    { key: ["2026-06-02"], cases: 10, total_late: 210, avg_late: 21.0, employees: 6, routes: 4 }
+  ],
+  employees: [
+    { key: [12,  "אלונה", "שאמלי",    "יהוד",       "יהוד- קרית אונו"],  cases: 4, total_late: 118, avg_late: 29.5 },
+    { key: [370, "ילנה",  "בוטוב",    "אריאל",      "פתח תקווה"],         cases: 3, total_late: 61,  avg_late: 20.3 },
+    { key: [88,  "דוד",   "כהן",      "לוד",         "לוד"],              cases: 2, total_late: 22,  avg_late: 11.0 },
+    { key: [205, "מרים",  "לוי",      "יהוד",        "פתח תקווה"],        cases: 5, total_late: 95,  avg_late: 19.0 },
+    { key: [44,  "עלי",   "אבו-עמר",  "פתח תקווה",   "פתח תקווה"],        cases: 6, total_late: 124, avg_late: 20.7 },
+    { key: [99,  "יוסי",  "פרץ",      "רמת גן",      "רמת גן מרכז"],      cases: 5, total_late: 87,  avg_late: 17.4 },
+    { key: [77,  "נועה",  "גרין",     "פתח תקווה",   "נתניה דרום"],       cases: 6, total_late: 117, avg_late: 19.5 },
+    { key: [33,  "משה",   "רוזן",     "נתניה",       "נתניה דרום"],       cases: 8, total_late: 160, avg_late: 20.0 }
   ]
 };

@@ -1,24 +1,23 @@
 const App = (() => {
   const api = () => (window.pywebview && window.pywebview.api) || null;
-  const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const esc = s => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
   // Cached state (employees list + path)
   let _state = { employees: [], source_path: null };
+
+  // Cross-filter: currently selected city (null = no filter)
+  let selectedCity = null;
 
   function filt() {
     return {
       employee: document.getElementById("f-emp").value,
       date_from: document.getElementById("f-from").value || null,
       date_to: document.getElementById("f-to").value || null,
+      cities: selectedCity ? [selectedCity] : [],
     };
   }
-  function view() { return document.getElementById("view").value; }
-  function sortKey() { return document.getElementById("sort-by").value; }
 
-  async function getView() {
-    if (api()) return await api().get_view(filt(), view());
-    return window.MOCK_VIEW; // макет
-  }
+  function sortKey() { return document.getElementById("sort-by").value; }
 
   // Severity classification by avg_late (minutes)
   function severity(avg) {
@@ -27,80 +26,57 @@ const App = (() => {
     return "sev-bad";
   }
 
-  // Build card title and subtitle for each view type
-  function cardMeta(v, row) {
-    const k = row.key;
-    if (v === "employee") {
-      const title = esc(k[1]) + " " + esc(k[2]);
-      const sub = esc(k[3]) + " · " + esc(k[4]);
-      return { title, sub };
-    }
-    if (v === "route") {
-      const title = esc(k[0]);
-      const sub = esc(row.employees) + " employee" + (row.employees !== 1 ? "s" : "");
-      return { title, sub };
-    }
-    if (v === "date") {
-      return { title: esc(k[0]), sub: "" };
-    }
-    if (v === "week") {
-      return { title: "Week of " + esc(k[0]), sub: "" };
-    }
-    if (v === "weekday") {
-      return { title: esc(k[0]), sub: "" };
-    }
-    return { title: esc(k[0]), sub: "" };
-  }
-
-  function renderTotals(t) {
+  // ── Render KPI strip ───────────────────────────────────────────
+  function renderKPI(t) {
     const defs = [
-      ["cases",       "Cases",        false],
-      ["total_late",  "Total Late (min)", true],
-      ["employees",   "Employees",    false],
-      ["routes",      "Routes",       false],
-      ["days",        "Days",         false],
+      ["cases",      "Cases",            false],
+      ["total_late", "Total Late (min)", true ],
+      ["employees",  "Employees",        false],
+      ["routes",     "Routes",           false],
+      ["days",       "Days",             false],
     ];
-    document.getElementById("totals-strip").innerHTML = defs.map(([k, l, hero]) =>
+    document.getElementById("totals-strip").innerHTML = defs.map(([k, label, hero]) =>
       '<div class="t-card' + (hero ? " hero" : "") + '">' +
         '<div class="t-val">' + esc(t[k] ?? 0) + "</div>" +
-        '<div class="t-label">' + l + "</div>" +
+        '<div class="t-label">' + esc(label) + "</div>" +
       "</div>"
     ).join("");
   }
 
-  function renderGrid(v, rows) {
+  // ── Render city cards grid ─────────────────────────────────────
+  function renderCities(rows) {
     const sk = sortKey();
     const sorted = [...rows].sort((a, b) => (b[sk] ?? 0) - (a[sk] ?? 0));
     const maxLate = sorted.reduce((m, r) => Math.max(m, r.total_late ?? 0), 0) || 1;
     const grid = document.getElementById("cards-grid");
+    const anySelected = selectedCity !== null;
 
     if (sorted.length === 0) {
-      grid.innerHTML =
-        '<div class="empty-state">No delays match the current filters.</div>';
+      grid.innerHTML = '<div class="empty-state">No delays match the current filters.</div>';
       return;
     }
 
     grid.innerHTML = sorted.map(row => {
-      const meta = cardMeta(v, row);
+      const cityName = row.key[0];
       const sev = severity(row.avg_late ?? 0);
       const pct = Math.round(((row.total_late ?? 0) / maxLate) * 100);
-      const titleDir = (v === "employee" || v === "route") ? " dir=\"auto\"" : "";
-      const subDir = (v === "employee" || v === "route") ? " dir=\"auto\"" : "";
 
-      const footParts = ["avg " + esc(row.avg_late) + " min"];
-      if (v !== "employee") footParts.push(esc(row.employees) + " emp");
-      if (v !== "route")    footParts.push(esc(row.routes) + " routes");
+      let cardClass = "d-card";
+      if (anySelected) {
+        if (cityName === selectedCity) {
+          cardClass += " card-selected";
+        } else {
+          cardClass += " card-dim";
+        }
+      }
 
       return (
-        '<div class="d-card">' +
+        '<div class="' + cardClass + '" data-city="' + esc(cityName) + '">' +
+          '<div class="card-city-label">CITY</div>' +
           '<div class="card-head">' +
-            '<span class="card-title"' + titleDir + ">" + meta.title + "</span>" +
-            '<span class="cases-badge">' + esc(row.cases) + " case" + (row.cases !== 1 ? "s" : "") + "</span>" +
+            '<span class="card-title" dir="auto">' + esc(cityName) + "</span>" +
+            '<span class="cases-badge">' + esc(row.cases) + " cases</span>" +
           "</div>" +
-          (meta.sub
-            ? '<div class="card-sub"' + subDir + ">" + meta.sub + "</div>"
-            : '<div class="card-sub"></div>'
-          ) +
           '<div class="hero-metric ' + sev + '">' +
             esc(row.total_late) +
             '<span class="hero-unit">min</span>' +
@@ -108,19 +84,67 @@ const App = (() => {
           '<div class="bar-track">' +
             '<div class="bar-fill ' + sev + '" style="width:' + pct + '%"></div>' +
           "</div>" +
-          '<div class="card-foot">' + footParts.join(" · ") + "</div>" +
+          '<div class="card-foot">avg ' + esc(row.avg_late) + " min &middot; " +
+            esc(row.employees) + " emp &middot; " +
+            esc(row.routes) + " routes</div>" +
         "</div>"
+      );
+    }).join("");
+
+    // Wire click delegation on the grid (re-attach each render)
+    grid.addEventListener("click", function onGridClick(e) {
+      const card = e.target.closest(".d-card[data-city]");
+      if (!card) return;
+      const city = card.dataset.city;
+      selectedCity = (selectedCity === city) ? null : city;
+      render();
+    }, { once: true });
+  }
+
+  // ── Render employees table ─────────────────────────────────────
+  function renderEmployees(rows) {
+    const tbody = document.getElementById("emp-tbody");
+
+    if (!rows || rows.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="7" class="emp-table-empty">No employee data for current filters.</td></tr>';
+      return;
+    }
+
+    // Sort by total_late desc (already sorted by backend, but enforce client-side)
+    const sorted = [...rows].sort((a, b) => (b.total_late ?? 0) - (a.total_late ?? 0));
+
+    tbody.innerHTML = sorted.map(row => {
+      // key: [emp_no, first, last, city, route]
+      const empNo = row.key[0];
+      const first = row.key[1];
+      const last  = row.key[2];
+      const city  = row.key[3];
+      const route = row.key[4];
+
+      return (
+        "<tr>" +
+          '<td class="emp-no-cell">' + esc(empNo) + "</td>" +
+          '<td dir="auto">' + esc(last) + "</td>" +
+          '<td dir="auto">' + esc(first) + "</td>" +
+          '<td dir="auto">' + esc(city) + "</td>" +
+          '<td dir="auto">' + esc(route) + "</td>" +
+          '<td class="num-cell">' + esc(row.cases) + "</td>" +
+          '<td class="num-cell">' + esc(row.total_late) + "</td>" +
+        "</tr>"
       );
     }).join("");
   }
 
+  // ── Main render ────────────────────────────────────────────────
   async function render() {
-    const data = await getView();
-    renderTotals(data.totals);
-    renderGrid(view(), data.rows);
+    const d = api() ? await api().get_dashboard(filt()) : window.MOCK_DASHBOARD;
+    renderKPI(d.totals);
+    renderCities(d.by_city);
+    renderEmployees(d.employees);
   }
 
-  // ── Autocomplete ────────────────────────────────────────────
+  // ── Autocomplete ───────────────────────────────────────────────
   function hideSuggest() {
     const box = document.getElementById("emp-suggest");
     box.hidden = true;
@@ -155,6 +179,7 @@ const App = (() => {
         .filter(n => n.toLowerCase().includes(q))
         .slice(0, 8);
       showSuggest(matches);
+      render();
     });
 
     inp.addEventListener("keydown", e => {
@@ -166,25 +191,47 @@ const App = (() => {
     });
   }
 
-  // ── Init ────────────────────────────────────────────────────
+  // ── Init / wire ────────────────────────────────────────────────
   async function wire() {
     // Fetch state once and cache it
-    let st;
-    if (api()) {
-      st = await api().get_state();
-    } else {
-      st = (window.MOCK_VIEW && window.MOCK_VIEW.state) || {};
-    }
-    _state = { employees: st.employees || [], source_path: st.source_path || null };
+    const st = api() ? await api().get_state() : window.MOCK_STATE;
+    _state = { employees: (st && st.employees) || [], source_path: (st && st.source_path) || null };
 
-    // Set path display from cached state
     document.getElementById("path").textContent = _state.source_path || "—";
 
     wireAutocomplete();
 
-    ["view", "f-emp", "f-from", "f-to", "sort-by"].forEach(id =>
-      document.getElementById(id).addEventListener("input", render));
-    document.getElementById("btn-file").onclick = async () => {
+    // Sort-by: re-render (no API fetch needed — renderCities re-sorts in memory)
+    document.getElementById("sort-by").addEventListener("change", render);
+
+    // Date slicers
+    document.getElementById("f-from").addEventListener("input", render);
+    document.getElementById("f-to").addEventListener("input", render);
+
+    // Clear button: reset all slicers + selectedCity, then re-render
+    document.getElementById("btn-clear").addEventListener("click", () => {
+      document.getElementById("f-emp").value = "";
+      document.getElementById("f-from").value = "";
+      document.getElementById("f-to").value = "";
+      hideSuggest();
+      selectedCity = null;
+      render();
+    });
+
+    // Refresh
+    document.getElementById("btn-refresh").addEventListener("click", async () => {
+      if (api()) {
+        const newState = await api().refresh();
+        if (newState) {
+          _state = { employees: newState.employees || [], source_path: newState.source_path || null };
+          document.getElementById("path").textContent = _state.source_path || "—";
+        }
+      }
+      await render();
+    });
+
+    // Change file
+    document.getElementById("btn-file").addEventListener("click", async () => {
       if (api()) {
         const newState = await api().choose_file();
         if (newState) {
@@ -193,33 +240,24 @@ const App = (() => {
         }
         await render();
       }
-    };
-    document.getElementById("btn-refresh").onclick = async () => {
-      if (api()) {
-        const newState = await api().refresh();
-        if (newState) {
-          _state = { employees: newState.employees || [], source_path: newState.source_path || null };
-          document.getElementById("path").textContent = _state.source_path || "—";
-        }
-        await render();
-      }
-    };
-    document.getElementById("btn-export").onclick = async () => {
-      if (api()) { await api().export(filt(), view(), "xlsx"); await render(); }
-    };
+    });
+
+    // Export
+    document.getElementById("btn-export").addEventListener("click", async () => {
+      if (api()) { await api().export(filt(), "city", "xlsx"); }
+    });
   }
 
   return {
     async init() { await wire(); await render(); },
     needFile() {
-      document.getElementById("path").textContent =
-        'No file selected — use "Change file…"';
+      document.getElementById("path").textContent = 'No file selected — use "Change file…"';
     },
     render,
   };
 })();
 
-// Вне pywebview (открытие index.html напрямую) — сразу показать макет.
+// Outside pywebview (opening index.html directly) — show mock immediately.
 if (!(window.pywebview && window.pywebview.api)) {
   window.addEventListener("DOMContentLoaded", () => App.init());
 }
