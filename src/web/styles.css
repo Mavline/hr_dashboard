@@ -27,6 +27,7 @@ body {
   color: var(--ink);
   background: var(--bg);
   min-height: 100vh;
+  width: 100%;
 }
 
 /* ── Header ─────────────────────────────────────────────────── */
@@ -87,6 +88,7 @@ button.secondary:hover { background: rgba(245,244,238,.08); }
   gap: 12px;
   padding: 16px 20px 4px;
   flex-wrap: wrap;
+  width: 100%;
 }
 .t-card {
   background: var(--surface);
@@ -128,41 +130,105 @@ button.secondary:hover { background: rgba(245,244,238,.08); }
 /* ── Controls row ────────────────────────────────────────────── */
 .controls {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   padding: 12px 20px;
   flex-wrap: wrap;
   align-items: flex-end;
+  width: 100%;
 }
 .controls label {
-  font-size: 11px;
+  font-size: 10px;
+  font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: .06em;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
+
+/* unified base for all form controls */
 .controls select,
+.controls input[type=search],
+.controls input[type=date],
+.controls input[type=text],
 .controls input {
-  font: 13px var(--font);
+  font: 13px/1 var(--font);
   color: var(--ink);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-ctrl);
-  padding: 6px 10px;
+  padding: 0 12px;
+  height: 38px;
   outline: none;
-  transition: border-color .15s;
+  transition: border-color .15s, box-shadow .15s;
   min-width: 120px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
+
+/* hover */
+.controls select:hover,
+.controls input[type=search]:hover,
+.controls input[type=date]:hover,
+.controls input[type=text]:hover,
+.controls input:hover {
+  border-color: #D8D3C7;
+}
+
+/* focus */
 .controls select:focus,
-.controls input:focus { border-color: var(--clay); }
+.controls input[type=search]:focus,
+.controls input[type=date]:focus,
+.controls input[type=text]:focus,
+.controls input:focus {
+  border-color: var(--clay);
+  box-shadow: 0 0 0 3px rgba(204,120,92,.18);
+}
+
+/* custom select arrow — muted chevron SVG */
+.controls select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2379756B' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+  cursor: pointer;
+}
+
+/* employee search — slightly wider */
+.controls input[type=search],
+.controls input[type=text] {
+  min-width: 160px;
+}
+
+/* date inputs */
+.controls input[type=date] {
+  min-width: 140px;
+}
+
+/* date picker indicator */
+.controls input[type=date]::-webkit-calendar-picker-indicator {
+  opacity: .55;
+  cursor: pointer;
+}
+.controls input[type=date]::-webkit-calendar-picker-indicator:hover {
+  opacity: .85;
+}
+
+/* placeholder text */
+.controls input::placeholder {
+  color: var(--muted);
+  opacity: .7;
+}
 
 /* ── Cards grid ──────────────────────────────────────────────── */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
   padding: 8px 20px 24px;
+  width: 100%;
 }
 
 /* ── Data card ───────────────────────────────────────────────── */
