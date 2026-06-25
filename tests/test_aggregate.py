@@ -79,6 +79,20 @@ def test_aggregate_by_date_basic():
     assert by_date[("2026-06-02",)]["cases"] == 1
 
 
+def test_aggregate_by_city_real(real_xlsx):
+    recs = excel_reader.read_records(real_xlsx)
+    rows = aggregate.aggregate_by(recs, "city")
+    # Invariant: city rows partition all lateness
+    assert sum(r["total_late"] for r in rows) == pytest.approx(aggregate.totals(recs)["total_late"])
+    # Sorted descending by total_late
+    totals_seq = [r["total_late"] for r in rows]
+    assert totals_seq == sorted(totals_seq, reverse=True)
+    # Each key is a 1-element list (the city name)
+    for row in rows:
+        assert isinstance(row["key"], list)
+        assert len(row["key"]) == 1
+
+
 def test_aggregate_by_weekday_basic():
     recs = [
         {"employee_no": 1, "first_name": "John", "last_name": "Doe",

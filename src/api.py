@@ -48,6 +48,15 @@ class Api:
             return self.load(self._source)
         return None
 
+    def get_dashboard(self, filt):
+        recs = filters.apply_filters(self._records, filt or {})
+        return {
+            "totals": aggregate.totals(recs),
+            "by_city": aggregate.aggregate_by(recs, "city"),
+            "by_date": aggregate.aggregate_by(recs, "date"),
+            "employees": aggregate.aggregate_by(recs, "employee"),
+        }
+
     def export(self, filt, view, fmt):
         recs = filters.apply_filters(self._records, filt or {})
         rows = aggregate.aggregate_by(recs, view or "employee")

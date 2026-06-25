@@ -26,6 +26,7 @@ _KEY = {
     "date": lambda r: (r["date"],),
     "week": lambda r: (_week_start(r["date"]),),
     "weekday": lambda r: (r["weekday"],),
+    "city": lambda r: (r["city"],),
 }
 
 
