@@ -13,7 +13,6 @@ const App = (() => {
       employee: document.getElementById("f-emp").value,
       date_from: document.getElementById("f-from").value || null,
       date_to: document.getElementById("f-to").value || null,
-      cities: selectedCity ? [selectedCity] : [],
     };
   }
 
@@ -94,7 +93,7 @@ const App = (() => {
   }
 
   // ── Render drawer content (card-rows) ─────────────────────────
-  function renderDrawer(employees) {
+  function renderDrawer(d) {
     const drawer   = document.getElementById("emp-drawer");
     const overlay  = document.getElementById("emp-overlay");
     const cityEl   = document.getElementById("drawer-city");
@@ -108,11 +107,19 @@ const App = (() => {
     }
 
     // Filter to selected city's employees only
-    const rows = (employees || []).filter(r => r.key[3] === selectedCity);
+    const rows = ((d && d.employees) || []).filter(r => r.key[3] === selectedCity);
     const sorted = [...rows].sort((a, b) => (b.total_late ?? 0) - (a.total_late ?? 0));
 
-    cityEl.textContent  = selectedCity;
-    countEl.textContent = sorted.length + (sorted.length === 1 ? " person" : " people");
+    cityEl.textContent = selectedCity;
+
+    // Show people count + city totals from by_city row
+    const cityRow = (d && d.by_city || []).find(r => r.key[0] === selectedCity);
+    const peopleStr = sorted.length + (sorted.length === 1 ? " person" : " people");
+    if (cityRow) {
+      countEl.textContent = peopleStr + " · " + (cityRow.total_late ?? 0) + " min · " + (cityRow.cases ?? 0) + " cases";
+    } else {
+      countEl.textContent = peopleStr;
+    }
 
     if (sorted.length === 0) {
       bodyEl.innerHTML = '<div class="drawer-empty">No employee data for this city.</div>';
@@ -158,7 +165,7 @@ const App = (() => {
     const d = api() ? await api().get_dashboard(filt()) : window.MOCK_DASHBOARD;
     renderKPI(d.totals);
     renderCities(d.by_city);
-    renderDrawer(d.employees);
+    renderDrawer(d);
   }
 
   // ── Autocomplete ───────────────────────────────────────────────
@@ -233,9 +240,11 @@ const App = (() => {
     // Drawer close: backdrop overlay
     document.getElementById("emp-overlay").addEventListener("click", closeDrawer);
 
-    // Drawer close: Escape key
+    // Drawer close: Escape key (only when autocomplete suggestion list is not open)
     document.addEventListener("keydown", e => {
-      if (e.key === "Escape" && selectedCity !== null) closeDrawer();
+      if (e.key === "Escape" && selectedCity !== null && document.getElementById("emp-suggest").hidden) {
+        closeDrawer();
+      }
     });
 
     // Sort-by: re-render (no API fetch needed — renderCities re-sorts in memory)
