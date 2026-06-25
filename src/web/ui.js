@@ -68,13 +68,21 @@ const App = (() => {
   // ── Render city cards grid ─────────────────────────────────────
   function renderCities(rows) {
     const sk = sortKey();
-    const sorted = [...rows].sort((a, b) => (b[sk] ?? 0) - (a[sk] ?? 0));
+    // Backend already sorts delay cities first by desc incidents; respect that
+    // but allow user to re-sort by other keys via the sort-by slicer.
+    // When sorting by the default key (cases) keep backend order intact for
+    // the delay-free cities (cases===0) so they stay at the bottom.
+    const sorted = [...rows].sort((a, b) => {
+      const av = a[sk] ?? 0;
+      const bv = b[sk] ?? 0;
+      return bv - av;
+    });
     const maxLate = sorted.reduce((m, r) => Math.max(m, r.total_late ?? 0), 0) || 1;
     const grid = document.getElementById("cards-grid");
     const anySelected = selectedCity !== null;
 
     if (sorted.length === 0) {
-      grid.innerHTML = '<div class="empty-state">No delays match the current filters.</div>';
+      grid.innerHTML = '<div class="empty-state">No cities to display.</div>';
       return;
     }
 
@@ -83,10 +91,12 @@ const App = (() => {
 
     grid.innerHTML = sorted.map(row => {
       const cityName = row.key[0];
-      const sev = severity(row.avg_late ?? 0);
-      const pct = Math.round(((row.total_late ?? 0) / maxLate) * 100);
+      const isDelayFree = (row.cases === 0);
+      const sev = isDelayFree ? "sev-neutral" : severity(row.avg_late ?? 0);
+      const pct = isDelayFree ? 0 : Math.round(((row.total_late ?? 0) / maxLate) * 100);
 
       let cardClass = "d-card";
+      if (isDelayFree) cardClass += " card-neutral";
       if (anySelected) {
         if (cityName === selectedCity) {
           cardClass += " card-selected";
@@ -95,21 +105,31 @@ const App = (() => {
         }
       }
 
+      // Badge: muted "no delays" for delay-free cities, colored cases badge otherwise
+      const badge = isDelayFree
+        ? '<span class="cases-badge cases-badge-neutral">no delays</span>'
+        : '<span class="cases-badge">' + esc(row.cases) + " cases</span>";
+
+      // Hero metric: grey "0 min" for delay-free, severity-colored otherwise
+      const heroMetric = isDelayFree
+        ? '<div class="hero-metric sev-neutral">0<span class="hero-unit">min</span></div>'
+        : '<div class="hero-metric ' + sev + '">' + esc(row.total_late) + '<span class="hero-unit">min</span></div>';
+
+      // Bar: empty for delay-free cities
+      const bar = isDelayFree
+        ? '<div class="bar-track"><div class="bar-fill bar-fill-neutral" style="width:0%"></div></div>'
+        : '<div class="bar-track"><div class="bar-fill ' + sev + '" style="width:' + pct + '%"></div></div>';
+
       return (
         '<div class="' + cardClass + '" data-city="' + esc(cityName) + '">' +
           '<div class="card-city-label">CITY</div>' +
           '<div class="card-head">' +
             '<span class="card-title" dir="auto">' + esc(cityName) + "</span>" +
-            '<span class="cases-badge">' + esc(row.cases) + " cases</span>" +
+            badge +
           "</div>" +
-          '<div class="hero-metric ' + sev + '">' +
-            esc(row.total_late) +
-            '<span class="hero-unit">min</span>' +
-          "</div>" +
-          '<div class="bar-track">' +
-            '<div class="bar-fill ' + sev + '" style="width:' + pct + '%"></div>' +
-          "</div>" +
-          '<div class="card-foot">avg ' + esc(row.avg_late) + " min &middot; " +
+          heroMetric +
+          bar +
+          '<div class="card-foot">avg ' + esc(isDelayFree ? 0 : row.avg_late) + " min &middot; " +
             esc(row.employees) + " emp &middot; " +
             esc(row.routes) + " routes</div>" +
         "</div>"
@@ -117,7 +137,7 @@ const App = (() => {
     }).join("");
   }
 
-  // ── Render drawer content (rebuild from records) ──────────────
+  // ── Render drawer content (from roster + records) ─────────────
   function renderDrawer(d) {
     const drawer   = document.getElementById("emp-drawer");
     const overlay  = document.getElementById("emp-overlay");
@@ -131,77 +151,108 @@ const App = (() => {
       return;
     }
 
-    // Group records for the selected city by employee_no
-    const cityRecords = ((d && d.records) || []).filter(r => r.city === selectedCity);
+    // All residents of this city from the full roster
+    const roster = ((d && d.roster) || []).filter(r => r.city === selectedCity);
 
-    // Build per-employee map: { empNo -> { empNo, first, last, route, records[] } }
-    const empMap = {};
+    // Records for this city indexed by employee_no
+    const cityRecords = ((d && d.records) || []).filter(r => r.city === selectedCity);
+    const recByEmp = {};
     cityRecords.forEach(r => {
       const no = r.employee_no;
-      if (!empMap[no]) {
-        empMap[no] = {
-          empNo: no,
-          first: r.first_name,
-          last: r.last_name,
-          route: r.route,
-          records: []
-        };
-      }
-      empMap[no].records.push(r);
+      if (!recByEmp[no]) recByEmp[no] = [];
+      recByEmp[no].push(r);
     });
 
-    // Sort each employee's records by date asc
-    const empList = Object.values(empMap);
-    empList.forEach(emp => {
-      emp.records.sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
-      emp.totalLate = emp.records.reduce((s, r) => s + (r.late_min || 0), 0);
-      emp.cases = emp.records.length;
+    // Build employee list from roster (not from records)
+    const empList = roster.map(person => {
+      const no = person.employee_no;
+      const recs = (recByEmp[no] || []).slice().sort(
+        (a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0
+      );
+      const totalLate = recs.reduce((s, r) => s + (r.late_min || 0), 0);
+      return {
+        empNo: no,
+        first: person.first_name,
+        last: person.last_name,
+        route: person.route,
+        records: recs,
+        totalLate,
+        cases: recs.length,
+      };
     });
 
-    // Sort employees by total late desc
-    empList.sort((a, b) => (b.totalLate ?? 0) - (a.totalLate ?? 0));
+    // Sort: delayed employees first (by totalLate desc), then delay-free alphabetically
+    empList.sort((a, b) => {
+      if (a.cases > 0 && b.cases === 0) return -1;
+      if (a.cases === 0 && b.cases > 0) return  1;
+      if (a.cases > 0 && b.cases > 0) return (b.totalLate - a.totalLate);
+      // both delay-free: sort by last name
+      return (a.last || "").localeCompare(b.last || "");
+    });
 
     cityEl.textContent = selectedCity;
 
-    // Drawer header: people count + city totals from by_city
+    // Drawer header: residents count + city totals from by_city row
     const cityRow = (d && d.by_city || []).find(r => r.key[0] === selectedCity);
-    const peopleStr = empList.length + (empList.length === 1 ? " person" : " people");
+    const residents = empList.length;
+    const residentsStr = residents + (residents === 1 ? " person" : " people");
     if (cityRow) {
-      countEl.textContent = peopleStr + " · " + (cityRow.total_late ?? 0) + " min · " + (cityRow.cases ?? 0) + " cases";
+      countEl.textContent =
+        residentsStr + " · " + (cityRow.cases ?? 0) + " cases · " + (cityRow.total_late ?? 0) + " min";
     } else {
-      countEl.textContent = peopleStr;
+      countEl.textContent = residentsStr;
     }
 
     if (empList.length === 0) {
       bodyEl.innerHTML = '<div class="drawer-empty">No employee data for this city.</div>';
     } else {
       bodyEl.innerHTML = empList.map((emp, i) => {
-        const sev = severity(emp.cases > 0 ? emp.totalLate / emp.cases : 0);
+        const hasDelays = emp.cases > 0;
+        const sev = hasDelays ? severity(emp.totalLate / emp.cases) : "sev-neutral";
         const delay = (i * 35) + "ms";
 
-        // Per-day rows
-        const dayRows = emp.records.map(r =>
-          '<div class="emp-day-row">' +
-            '<span class="emp-day-date">' + esc(fmtDate(r.date)) + "</span>" +
-            '<span class="emp-day-late">+' + esc(r.late_min) + " min</span>" +
-            '<span class="emp-day-arrival">' + esc(r.arrival || "—") + "</span>" +
-          "</div>"
-        ).join("");
+        // Per-day rows (only for employees with delays)
+        let daysSection = "";
+        if (hasDelays) {
+          const dayRows = emp.records.map(r =>
+            '<div class="emp-day-row">' +
+              '<span class="emp-day-date">' + esc(fmtDate(r.date)) + "</span>" +
+              '<span class="emp-day-late">+' + esc(r.late_min) + " min</span>" +
+              '<span class="emp-day-arrival">' + esc(r.arrival || "—") + "</span>" +
+            "</div>"
+          ).join("");
+          daysSection = '<div class="emp-days">' + dayRows + "</div>";
+        } else {
+          daysSection =
+            '<div class="emp-days emp-days-nodelay">' +
+              '<span class="emp-nodelay-label">No delays in period</span>' +
+            '</div>';
+        }
+
+        // Summary: total + cases (muted for delay-free)
+        const summaryHtml = hasDelays
+          ? '<div class="emp-card-summary">' +
+              '<div class="emp-card-late ' + sev + '">' + esc(emp.totalLate) +
+                '<span style="font-size:11px;font-weight:500;margin-left:2px">min</span></div>' +
+              '<div class="emp-card-cases">' + esc(emp.cases) + " cases</div>" +
+            "</div>"
+          : '<div class="emp-card-summary">' +
+              '<div class="emp-card-late emp-card-late-neutral">0' +
+                '<span style="font-size:11px;font-weight:500;margin-left:2px">min</span></div>' +
+              '<div class="emp-card-cases emp-card-cases-neutral">0 cases</div>' +
+            "</div>";
 
         return (
-          '<div class="emp-card" style="animation-delay:' + delay + '">' +
+          '<div class="emp-card' + (hasDelays ? "" : " emp-card-neutral") + '" style="animation-delay:' + delay + '">' +
             '<div class="emp-card-top">' +
-              '<div class="emp-card-number">' + esc(emp.empNo) + "</div>" +
+              '<div class="emp-card-number' + (hasDelays ? "" : " emp-card-number-neutral") + '">' + esc(emp.empNo) + "</div>" +
               '<div class="emp-card-info">' +
                 '<div class="emp-card-name" dir="auto">' + esc(emp.last) + " " + esc(emp.first) + "</div>" +
                 '<div class="emp-card-route" dir="auto">' + esc(emp.route) + "</div>" +
               "</div>" +
-              '<div class="emp-card-summary">' +
-                '<div class="emp-card-late ' + sev + '">' + esc(emp.totalLate) + '<span style="font-size:11px;font-weight:500;margin-left:2px">min</span></div>' +
-                '<div class="emp-card-cases">' + esc(emp.cases) + " cases</div>" +
-              "</div>" +
+              summaryHtml +
             "</div>" +
-            '<div class="emp-days">' + dayRows + "</div>" +
+            daysSection +
           "</div>"
         );
       }).join("");
