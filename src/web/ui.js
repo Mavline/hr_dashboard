@@ -1,5 +1,6 @@
 const App = (() => {
   const api = () => (window.pywebview && window.pywebview.api) || null;
+  const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   let sortCol = "total_late", sortDir = -1;
 
   function filt() {
@@ -43,10 +44,10 @@ const App = (() => {
       METRIC_LABELS.map((l,i) => `<th data-col="${METRICS[i]}">${l}</th>`).join("") +
       "</tr>";
     const sorted = [...rows].sort((a,b) =>
-      (a[sortCol] > b[sortCol] ? 1 : -1) * sortDir);
+      ((a[sortCol] ?? 0) - (b[sortCol] ?? 0)) * sortDir);
     tbody.innerHTML = sorted.map(r =>
-      "<tr>" + r.key.map(c => `<td>${c ?? ""}</td>`).join("") +
-      METRICS.map(m => `<td>${r[m]}</td>`).join("") + "</tr>"
+      "<tr>" + r.key.map(c => `<td>${esc(c)}</td>`).join("") +
+      METRICS.map(m => `<td>${esc(r[m])}</td>`).join("") + "</tr>"
     ).join("");
     thead.querySelectorAll("th[data-col]").forEach(th =>
       th.onclick = () => {
@@ -68,10 +69,10 @@ const App = (() => {
     ["view","f-emp","f-from","f-to"].forEach(id =>
       document.getElementById(id).addEventListener("input", render));
     document.getElementById("btn-file").onclick = async () => {
-      if (api()) { await api().choose_file(); render(); }
+      if (api()) { await api().choose_file(); await render(); }
     };
     document.getElementById("btn-refresh").onclick = async () => {
-      if (api()) { await api().refresh(); render(); }
+      if (api()) { await api().refresh(); await render(); }
     };
     document.getElementById("btn-export").onclick = async () => {
       if (api()) await api().export(filt(), view(), "xlsx");
