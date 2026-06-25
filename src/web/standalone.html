@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en" dir="auto">
+<head>
+  <meta charset="utf-8">
+  <title>Bus Delays Dashboard — Standalone</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── Drop-zone landing screen ──────────────────────────── */
+    #dropzone-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      padding: 40px 20px;
+    }
+
+    #dropzone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      width: 100%;
+      max-width: 480px;
+      min-height: 260px;
+      border: 2.5px dashed var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      box-shadow: var(--shadow-lg);
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      padding: 40px 32px;
+      text-align: center;
+    }
+    #dropzone:hover,
+    #dropzone.dz-over {
+      border-color: var(--clay);
+      background: rgba(204, 120, 92, .04);
+    }
+    #dropzone.dz-over {
+      border-style: solid;
+    }
+
+    .dz-icon {
+      font-size: 48px;
+      line-height: 1;
+      user-select: none;
+    }
+    .dz-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .dz-sub {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .dz-btn {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 9px 22px;
+      background: var(--clay);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-ctrl);
+      font: 13px/1 var(--font);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .dz-btn:hover { background: var(--clay-deep); }
+
+    #dz-last-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    /* hidden file inputs */
+    #dropzone-file-input,
+    #hidden-file-input {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header (shown in both states) ─────────────────────────── -->
+  <header>
+    <span class="app-title">Bus Delays Dashboard</span>
+    <div class="spacer"></div>
+    <button id="btn-refresh" class="secondary" style="display:none">Refresh</button>
+    <button id="btn-file"    class="secondary" style="display:none">Change file…</button>
+    <button id="btn-export"  class="primary"   style="display:none">Export</button>
+    <span class="path" id="path">—</span>
+  </header>
+
+  <!-- ── Landing: file drop-zone ──────────────────────────────── -->
+  <div id="dropzone-wrapper">
+    <div id="dropzone">
+      <div class="dz-icon">📊</div>
+      <div class="dz-title">Drop HR report.xlsx here</div>
+      <div class="dz-sub">or click to choose a file</div>
+      <button class="dz-btn" onclick="document.getElementById('dropzone-file-input').click(); event.stopPropagation();">Choose file…</button>
+      <div id="dz-last-hint"></div>
+    </div>
+  </div>
+
+  <!-- Hidden file inputs -->
+  <input type="file" id="dropzone-file-input" accept=".xlsx,.xls">
+  <input type="file" id="hidden-file-input"   accept=".xlsx,.xls">
+
+  <!-- ── Dashboard (hidden until file loaded) ─────────────────── -->
+  <div id="dashboard-wrapper" hidden>
+
+    <section class="totals-strip" id="totals-strip"></section>
+
+    <section class="controls">
+      <label>Sort by
+        <select id="sort-by">
+          <option value="total_late">Total Late</option>
+          <option value="cases">Cases</option>
+          <option value="avg_late">Avg Late</option>
+        </select>
+      </label>
+      <label>Employee
+        <div class="emp-wrap">
+          <input id="f-emp" type="search" placeholder="name / no">
+          <div id="emp-suggest" class="suggest" hidden></div>
+        </div>
+      </label>
+      <label>From <input id="f-from" type="date"></label>
+      <label>To   <input id="f-to"   type="date"></label>
+      <label class="clear-wrap">
+        <span class="label-spacer">&nbsp;</span>
+        <button id="btn-clear" class="secondary clear-btn">Clear</button>
+      </label>
+    </section>
+
+    <div class="scroll-area" id="scroll-area">
+      <div class="cards-grid" id="cards-grid"></div>
+    </div>
+
+  </div><!-- /#dashboard-wrapper -->
+
+  <!-- Backdrop overlay -->
+  <div id="emp-overlay" class="emp-overlay"></div>
+
+  <!-- Slide-in drawer -->
+  <aside id="emp-drawer" class="emp-drawer" role="dialog" aria-modal="true" aria-label="Employee details">
+    <div class="drawer-header">
+      <div class="drawer-title-block">
+        <span class="drawer-label">EMPLOYEES</span>
+        <span class="drawer-city" id="drawer-city" dir="auto"></span>
+      </div>
+      <span class="drawer-count" id="drawer-count"></span>
+      <button id="drawer-close" class="drawer-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </aside>
+
+  <script src="xlsx.full.min.js"></script>
+  <script src="engine.js"></script>
+  <script src="web-app.js"></script>
+
+  <script>
+    // Show dashboard controls in header once a file is loaded.
+    // web-app.js calls showDashboard() which hides the dropzone;
+    // we also reveal the header buttons at that point.
+    (function () {
+      const origShow = window.__showDashboard;
+      // Patch via MutationObserver on the dashboard wrapper
+      const dw = document.getElementById("dashboard-wrapper");
+      const obs = new MutationObserver(() => {
+        if (!dw.hidden) {
+          ["btn-refresh", "btn-file", "btn-export"].forEach(id => {
+            document.getElementById(id).style.display = "";
+          });
+          obs.disconnect();
+        }
+      });
+      obs.observe(dw, { attributes: true });
+    })();
+  </script>
+</body>
+</html>
