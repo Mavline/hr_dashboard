@@ -37,5 +37,81 @@ window.MOCK_DASHBOARD = {
     { key: [250, "שרה",   "כהן",      "רמת גן",      "רמת גן מרכז"],      cases: 4, total_late: 62,  avg_late: 15.5 },
     { key: [33,  "משה",   "רוזן",     "נתניה",       "נתניה דרום"],       cases: 8, total_late: 160, avg_late: 20.0 },
     { key: [410, "רחל",   "דהן",      "נתניה",       "נתניה דרום"],       cases: 3, total_late: 55,  avg_late: 18.3 }
+  ],
+  records: [
+    // יהוד — emp 12 (שאמלי אלונה), 4 records
+    { employee_no: 12,  first_name: "אלונה", last_name: "שאמלי",   city: "יהוד",       route: "יהוד- קרית אונו", date: "2026-06-01", weekday: "שני",    late_min: 32, arrival: "07:32" },
+    { employee_no: 12,  first_name: "אלונה", last_name: "שאמלי",   city: "יהוד",       route: "יהוד- קרית אונו", date: "2026-06-02", weekday: "שלישי",  late_min: 28, arrival: "07:28" },
+    { employee_no: 12,  first_name: "אלונה", last_name: "שאמלי",   city: "יהוד",       route: "יהוד- קרית אונו", date: "2026-06-03", weekday: "רביעי",  late_min: 35, arrival: "07:35" },
+    { employee_no: 12,  first_name: "אלונה", last_name: "שאמלי",   city: "יהוד",       route: "יהוד- קרית אונו", date: "2026-06-05", weekday: "שישי",   late_min: 23, arrival: "07:23" },
+    // יהוד — emp 205 (לוי מרים), 5 records
+    { employee_no: 205, first_name: "מרים",  last_name: "לוי",     city: "יהוד",       route: "פתח תקווה",       date: "2026-06-01", weekday: "שני",    late_min: 18, arrival: "07:18" },
+    { employee_no: 205, first_name: "מרים",  last_name: "לוי",     city: "יהוד",       route: "פתח תקווה",       date: "2026-06-02", weekday: "שלישי",  late_min: 21, arrival: "07:21" },
+    { employee_no: 205, first_name: "מרים",  last_name: "לוי",     city: "יהוד",       route: "פתח תקווה",       date: "2026-06-03", weekday: "רביעי",  late_min: 17, arrival: "07:17" },
+    { employee_no: 205, first_name: "מרים",  last_name: "לוי",     city: "יהוד",       route: "פתח תקווה",       date: "2026-06-04", weekday: "חמישי",  late_min: 20, arrival: "07:20" },
+    { employee_no: 205, first_name: "מרים",  last_name: "לוי",     city: "יהוד",       route: "פתח תקווה",       date: "2026-06-06", weekday: "שבת",    late_min: 19, arrival: "07:19" },
+    // יהוד — emp 301 (אברהם יעל), 3 records
+    { employee_no: 301, first_name: "יעל",   last_name: "אברהם",   city: "יהוד",       route: "יהוד- קרית אונו", date: "2026-06-02", weekday: "שלישי",  late_min: 20, arrival: "07:20" },
+    { employee_no: 301, first_name: "יעל",   last_name: "אברהם",   city: "יהוד",       route: "יהוד- קרית אונו", date: "2026-06-04", weekday: "חמישי",  late_min: 16, arrival: "07:16" },
+    { employee_no: 301, first_name: "יעל",   last_name: "אברהם",   city: "יהוד",       route: "יהוד- קרית אונו", date: "2026-06-05", weekday: "שישי",   late_min: 18, arrival: "07:18" },
+    // פתח תקווה — emp 44 (אבו-עמר עלי), 6 records
+    { employee_no: 44,  first_name: "עלי",   last_name: "אבו-עמר", city: "פתח תקווה",  route: "פתח תקווה",       date: "2026-06-01", weekday: "שני",    late_min: 25, arrival: "07:25" },
+    { employee_no: 44,  first_name: "עלי",   last_name: "אבו-עמר", city: "פתח תקווה",  route: "פתח תקווה",       date: "2026-06-02", weekday: "שלישי",  late_min: 18, arrival: "07:18" },
+    { employee_no: 44,  first_name: "עלי",   last_name: "אבו-עמר", city: "פתח תקווה",  route: "פתח תקווה",       date: "2026-06-03", weekday: "רביעי",  late_min: 22, arrival: "07:22" },
+    { employee_no: 44,  first_name: "עלי",   last_name: "אבו-עמר", city: "פתח תקווה",  route: "פתח תקווה",       date: "2026-06-04", weekday: "חמישי",  late_min: 30, arrival: "07:30" },
+    { employee_no: 44,  first_name: "עלי",   last_name: "אבו-עמר", city: "פתח תקווה",  route: "פתח תקווה",       date: "2026-06-05", weekday: "שישי",   late_min: 15, arrival: "07:15" },
+    { employee_no: 44,  first_name: "עלי",   last_name: "אבו-עמר", city: "פתח תקווה",  route: "פתח תקווה",       date: "2026-06-07", weekday: "ראשון",  late_min: 14, arrival: "07:14" },
+    // פתח תקווה — emp 77 (גרין נועה), 6 records
+    { employee_no: 77,  first_name: "נועה",  last_name: "גרין",    city: "פתח תקווה",  route: "נתניה דרום",      date: "2026-06-01", weekday: "שני",    late_min: 19, arrival: "07:19" },
+    { employee_no: 77,  first_name: "נועה",  last_name: "גרין",    city: "פתח תקווה",  route: "נתניה דרום",      date: "2026-06-02", weekday: "שלישי",  late_min: 24, arrival: "07:24" },
+    { employee_no: 77,  first_name: "נועה",  last_name: "גרין",    city: "פתח תקווה",  route: "נתניה דרום",      date: "2026-06-03", weekday: "רביעי",  late_min: 17, arrival: "07:17" },
+    { employee_no: 77,  first_name: "נועה",  last_name: "גרין",    city: "פתח תקווה",  route: "נתניה דרום",      date: "2026-06-04", weekday: "חמישי",  late_min: 21, arrival: "07:21" },
+    { employee_no: 77,  first_name: "נועה",  last_name: "גרין",    city: "פתח תקווה",  route: "נתניה דרום",      date: "2026-06-05", weekday: "שישי",   late_min: 22, arrival: "07:22" },
+    { employee_no: 77,  first_name: "נועה",  last_name: "גרין",    city: "פתח תקווה",  route: "נתניה דרום",      date: "2026-06-06", weekday: "שבת",    late_min: 14, arrival: "07:14" },
+    // פתח תקווה — emp 188 (כץ טל), 4 records
+    { employee_no: 188, first_name: "טל",    last_name: "כץ",      city: "פתח תקווה",  route: "פתח תקווה",       date: "2026-06-01", weekday: "שני",    late_min: 20, arrival: "07:20" },
+    { employee_no: 188, first_name: "טל",    last_name: "כץ",      city: "פתח תקווה",  route: "פתח תקווה",       date: "2026-06-03", weekday: "רביעי",  late_min: 16, arrival: "07:16" },
+    { employee_no: 188, first_name: "טל",    last_name: "כץ",      city: "פתח תקווה",  route: "פתח תקווה",       date: "2026-06-05", weekday: "שישי",   late_min: 17, arrival: "07:17" },
+    { employee_no: 188, first_name: "טל",    last_name: "כץ",      city: "פתח תקווה",  route: "פתח תקווה",       date: "2026-06-07", weekday: "ראשון",  late_min: 15, arrival: null  },
+    // רמת גן — emp 99 (פרץ יוסי), 5 records
+    { employee_no: 99,  first_name: "יוסי",  last_name: "פרץ",     city: "רמת גן",     route: "רמת גן מרכז",     date: "2026-06-01", weekday: "שני",    late_min: 15, arrival: "07:15" },
+    { employee_no: 99,  first_name: "יוסי",  last_name: "פרץ",     city: "רמת גן",     route: "רמת גן מרכז",     date: "2026-06-02", weekday: "שלישי",  late_min: 20, arrival: "07:20" },
+    { employee_no: 99,  first_name: "יוסי",  last_name: "פרץ",     city: "רמת גן",     route: "רמת גן מרכז",     date: "2026-06-03", weekday: "רביעי",  late_min: 18, arrival: "07:18" },
+    { employee_no: 99,  first_name: "יוסי",  last_name: "פרץ",     city: "רמת גן",     route: "רמת גן מרכז",     date: "2026-06-04", weekday: "חמישי",  late_min: 14, arrival: "07:14" },
+    { employee_no: 99,  first_name: "יוסי",  last_name: "פרץ",     city: "רמת גן",     route: "רמת גן מרכז",     date: "2026-06-06", weekday: "שבת",    late_min: 20, arrival: "07:20" },
+    // רמת גן — emp 250 (כהן שרה), 4 records
+    { employee_no: 250, first_name: "שרה",   last_name: "כהן",     city: "רמת גן",     route: "רמת גן מרכז",     date: "2026-06-02", weekday: "שלישי",  late_min: 17, arrival: "07:17" },
+    { employee_no: 250, first_name: "שרה",   last_name: "כהן",     city: "רמת גן",     route: "רמת גן מרכז",     date: "2026-06-03", weekday: "רביעי",  late_min: 14, arrival: "07:14" },
+    { employee_no: 250, first_name: "שרה",   last_name: "כהן",     city: "רמת גן",     route: "רמת גן מרכז",     date: "2026-06-05", weekday: "שישי",   late_min: 16, arrival: "07:16" },
+    { employee_no: 250, first_name: "שרה",   last_name: "כהן",     city: "רמת גן",     route: "רמת גן מרכז",     date: "2026-06-07", weekday: "ראשון",  late_min: 15, arrival: null  },
+    // נתניה — emp 33 (רוזן משה), 8 records
+    { employee_no: 33,  first_name: "משה",   last_name: "רוזן",    city: "נתניה",      route: "נתניה דרום",      date: "2026-06-01", weekday: "שני",    late_min: 22, arrival: "07:22" },
+    { employee_no: 33,  first_name: "משה",   last_name: "רוזן",    city: "נתניה",      route: "נתניה דרום",      date: "2026-06-02", weekday: "שלישי",  late_min: 19, arrival: "07:19" },
+    { employee_no: 33,  first_name: "משה",   last_name: "רוזן",    city: "נתניה",      route: "נתניה דרום",      date: "2026-06-03", weekday: "רביעי",  late_min: 20, arrival: "07:20" },
+    { employee_no: 33,  first_name: "משה",   last_name: "רוזן",    city: "נתניה",      route: "נתניה דרום",      date: "2026-06-04", weekday: "חמישי",  late_min: 25, arrival: "07:25" },
+    { employee_no: 33,  first_name: "משה",   last_name: "רוזן",    city: "נתניה",      route: "נתניה דרום",      date: "2026-06-05", weekday: "שישי",   late_min: 18, arrival: "07:18" },
+    { employee_no: 33,  first_name: "משה",   last_name: "רוזן",    city: "נתניה",      route: "נתניה דרום",      date: "2026-06-06", weekday: "שבת",    late_min: 21, arrival: "07:21" },
+    { employee_no: 33,  first_name: "משה",   last_name: "רוזן",    city: "נתניה",      route: "נתניה דרום",      date: "2026-06-07", weekday: "ראשון",  late_min: 17, arrival: "07:17" },
+    { employee_no: 33,  first_name: "משה",   last_name: "רוזן",    city: "נתניה",      route: "נתניה דרום",      date: "2026-06-08", weekday: "שני",    late_min: 18, arrival: "07:18" },
+    // נתניה — emp 410 (דהן רחל), 3 records
+    { employee_no: 410, first_name: "רחל",   last_name: "דהן",     city: "נתניה",      route: "נתניה דרום",      date: "2026-06-02", weekday: "שלישי",  late_min: 19, arrival: "07:19" },
+    { employee_no: 410, first_name: "רחל",   last_name: "דהן",     city: "נתניה",      route: "נתניה דרום",      date: "2026-06-04", weekday: "חמישי",  late_min: 18, arrival: "07:18" },
+    { employee_no: 410, first_name: "רחל",   last_name: "דהן",     city: "נתניה",      route: "נתניה דרום",      date: "2026-06-06", weekday: "שבת",    late_min: 18, arrival: null  },
+    // אריאל — emp 370 (בוטוב ילנה), 3 records
+    { employee_no: 370, first_name: "ילנה",  last_name: "בוטוב",   city: "אריאל",      route: "פתח תקווה",       date: "2026-06-01", weekday: "שני",    late_min: 22, arrival: "07:22" },
+    { employee_no: 370, first_name: "ילנה",  last_name: "בוטוב",   city: "אריאל",      route: "פתח תקווה",       date: "2026-06-03", weekday: "רביעי",  late_min: 20, arrival: "07:20" },
+    { employee_no: 370, first_name: "ילנה",  last_name: "בוטוב",   city: "אריאל",      route: "פתח תקווה",       date: "2026-06-05", weekday: "שישי",   late_min: 19, arrival: "07:19" },
+    // אריאל — emp 415 (שפירא אמיר), 2 records
+    { employee_no: 415, first_name: "אמיר",  last_name: "שפירא",   city: "אריאל",      route: "פתח תקווה",       date: "2026-06-02", weekday: "שלישי",  late_min: 25, arrival: "07:25" },
+    { employee_no: 415, first_name: "אמיר",  last_name: "שפירא",   city: "אריאל",      route: "פתח תקווה",       date: "2026-06-04", weekday: "חמישי",  late_min: 23, arrival: "07:23" },
+    // לוד — emp 88 (כהן דוד), 2 records
+    { employee_no: 88,  first_name: "דוד",   last_name: "כהן",     city: "לוד",        route: "לוד",             date: "2026-06-01", weekday: "שני",    late_min: 12, arrival: "07:12" },
+    { employee_no: 88,  first_name: "דוד",   last_name: "כהן",     city: "לוד",        route: "לוד",             date: "2026-06-03", weekday: "רביעי",  late_min: 10, arrival: "07:10" },
+    // לוד — emp 134 (מזרחי חנה), 3 records
+    { employee_no: 134, first_name: "חנה",   last_name: "מזרחי",   city: "לוד",        route: "לוד",             date: "2026-06-02", weekday: "שלישי",  late_min: 24, arrival: "07:24" },
+    { employee_no: 134, first_name: "חנה",   last_name: "מזרחי",   city: "לוד",        route: "לוד",             date: "2026-06-04", weekday: "חמישי",  late_min: 23, arrival: "07:23" },
+    { employee_no: 134, first_name: "חנה",   last_name: "מזרחי",   city: "לוד",        route: "לוד",             date: "2026-06-06", weekday: "שבת",    late_min: 24, arrival: "07:24" },
+    // לוד — emp 222 (ביטון אסף), 1 record
+    { employee_no: 222, first_name: "אסף",   last_name: "ביטון",   city: "לוד",        route: "לוד",             date: "2026-06-05", weekday: "שישי",   late_min: 15, arrival: "07:15" }
   ]
 };

@@ -25,6 +25,14 @@ const App = (() => {
     return "sev-bad";
   }
 
+  // Format ISO date "YYYY-MM-DD" -> "DD.MM"
+  function fmtDate(iso) {
+    if (!iso) return "";
+    const parts = iso.split("-");
+    if (parts.length < 3) return iso;
+    return parts[2] + "." + parts[1];
+  }
+
   // ── Render KPI strip ───────────────────────────────────────────
   function renderKPI(t) {
     const defs = [
@@ -89,10 +97,9 @@ const App = (() => {
         "</div>"
       );
     }).join("");
-
   }
 
-  // ── Render drawer content (card-rows) ─────────────────────────
+  // ── Render drawer content (rebuild from records) ──────────────
   function renderDrawer(d) {
     const drawer   = document.getElementById("emp-drawer");
     const overlay  = document.getElementById("emp-overlay");
@@ -106,45 +113,77 @@ const App = (() => {
       return;
     }
 
-    // Filter to selected city's employees only
-    const rows = ((d && d.employees) || []).filter(r => r.key[3] === selectedCity);
-    const sorted = [...rows].sort((a, b) => (b.total_late ?? 0) - (a.total_late ?? 0));
+    // Group records for the selected city by employee_no
+    const cityRecords = ((d && d.records) || []).filter(r => r.city === selectedCity);
+
+    // Build per-employee map: { empNo -> { empNo, first, last, route, records[] } }
+    const empMap = {};
+    cityRecords.forEach(r => {
+      const no = r.employee_no;
+      if (!empMap[no]) {
+        empMap[no] = {
+          empNo: no,
+          first: r.first_name,
+          last: r.last_name,
+          route: r.route,
+          records: []
+        };
+      }
+      empMap[no].records.push(r);
+    });
+
+    // Sort each employee's records by date asc
+    const empList = Object.values(empMap);
+    empList.forEach(emp => {
+      emp.records.sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+      emp.totalLate = emp.records.reduce((s, r) => s + (r.late_min || 0), 0);
+      emp.cases = emp.records.length;
+    });
+
+    // Sort employees by total late desc
+    empList.sort((a, b) => (b.totalLate ?? 0) - (a.totalLate ?? 0));
 
     cityEl.textContent = selectedCity;
 
-    // Show people count + city totals from by_city row
+    // Drawer header: people count + city totals from by_city
     const cityRow = (d && d.by_city || []).find(r => r.key[0] === selectedCity);
-    const peopleStr = sorted.length + (sorted.length === 1 ? " person" : " people");
+    const peopleStr = empList.length + (empList.length === 1 ? " person" : " people");
     if (cityRow) {
       countEl.textContent = peopleStr + " · " + (cityRow.total_late ?? 0) + " min · " + (cityRow.cases ?? 0) + " cases";
     } else {
       countEl.textContent = peopleStr;
     }
 
-    if (sorted.length === 0) {
+    if (empList.length === 0) {
       bodyEl.innerHTML = '<div class="drawer-empty">No employee data for this city.</div>';
     } else {
-      bodyEl.innerHTML = sorted.map((row, i) => {
-        // key: [emp_no, first, last, city, route]
-        const empNo = row.key[0];
-        const first = row.key[1];
-        const last  = row.key[2];
-        const route = row.key[4];
-        const sev   = severity(row.avg_late ?? 0);
-        // stagger: each card slightly delayed
+      bodyEl.innerHTML = empList.map((emp, i) => {
+        const sev = severity(emp.cases > 0 ? emp.totalLate / emp.cases : 0);
         const delay = (i * 35) + "ms";
+
+        // Per-day rows
+        const dayRows = emp.records.map(r =>
+          '<div class="emp-day-row">' +
+            '<span class="emp-day-date">' + esc(fmtDate(r.date)) + "</span>" +
+            '<span class="emp-day-late">+' + esc(r.late_min) + " min</span>" +
+            '<span class="emp-day-arrival">' + esc(r.arrival || "—") + "</span>" +
+          "</div>"
+        ).join("");
 
         return (
           '<div class="emp-card" style="animation-delay:' + delay + '">' +
-            '<div class="emp-card-info">' +
-              '<div class="emp-card-name" dir="auto">' + esc(last) + " " + esc(first) + "</div>" +
-              '<div class="emp-card-sub" dir="auto">route &middot; ' + esc(route) + "</div>" +
-              '<div class="emp-card-no">#' + esc(empNo) + "</div>" +
+            '<div class="emp-card-top">' +
+              '<div class="emp-card-number">' + esc(emp.empNo) + "</div>" +
+              '<div class="emp-card-info">' +
+                '<div class="emp-card-name" dir="auto">' + esc(emp.last) + " " + esc(emp.first) + "</div>" +
+                '<div class="emp-card-route" dir="auto">' + esc(emp.route) + "</div>" +
+              "</div>" +
+              '<div class="emp-card-summary">' +
+                '<div class="emp-card-late ' + sev + '">' + esc(emp.totalLate) + '<span style="font-size:11px;font-weight:500;margin-left:2px">min</span></div>' +
+                '<div class="emp-card-cases">' + esc(emp.cases) + " cases</div>" +
+              "</div>" +
             "</div>" +
-            '<div class="emp-card-meta">' +
-              '<div class="emp-card-late ' + sev + '">' + esc(row.total_late) + '<span style="font-size:11px;font-weight:500;margin-left:2px">min</span></div>' +
-              '<div class="emp-card-cases">' + esc(row.cases) + " cases</div>" +
-            "</div>" +
+            '<div class="emp-days">' + dayRows + "</div>" +
           "</div>"
         );
       }).join("");

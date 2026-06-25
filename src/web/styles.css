@@ -99,10 +99,11 @@ button.clear-btn {
 button.clear-btn:hover { background: var(--bg); }
 
 /* ── Totals strip ────────────────────────────────────────────── */
+/* CHANGE 1: bigger, more dominant KPI strip */
 .totals-strip {
   display: flex;
-  gap: 12px;
-  padding: 16px 20px 4px;
+  gap: 14px;
+  padding: 18px 20px 6px;
   flex-wrap: wrap;
   width: 100%;
   flex-shrink: 0;
@@ -110,9 +111,9 @@ button.clear-btn:hover { background: var(--bg); }
 .t-card {
   background: var(--surface);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow);
-  padding: 14px 18px 12px;
-  min-width: 110px;
+  box-shadow: var(--shadow-lg);
+  padding: 20px 24px 18px;
+  min-width: 130px;
   flex: 1;
   position: relative;
   overflow: hidden;
@@ -121,38 +122,42 @@ button.clear-btn:hover { background: var(--bg); }
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 3px;
+  height: 4px;
   background: var(--clay);
   border-radius: var(--radius-card) var(--radius-card) 0 0;
 }
-.t-card.hero::before { height: 4px; }
+.t-card.hero::before { height: 5px; background: var(--clay-deep); }
 .t-card .t-val {
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.1;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
   color: var(--ink);
+  letter-spacing: -.02em;
 }
 .t-card.hero .t-val {
   color: var(--clay);
-  font-size: 28px;
+  font-size: 44px;
 }
 .t-card .t-label {
   font-size: 11px;
   color: var(--muted);
-  margin-top: 4px;
+  margin-top: 6px;
   text-transform: uppercase;
-  letter-spacing: .04em;
+  letter-spacing: .05em;
+  font-weight: 600;
 }
 
 /* ── Controls row ────────────────────────────────────────────── */
+/* CHANGE 2: centered slicers */
 .controls {
   display: flex;
   gap: 12px;
-  padding: 12px 20px;
+  padding: 10px 20px;
   flex-wrap: wrap;
   align-items: flex-end;
   width: 100%;
   flex-shrink: 0;
+  justify-content: center;
 }
 .controls label {
   font-size: 10px;
@@ -285,20 +290,27 @@ button.clear-btn:hover { background: var(--bg); }
 }
 
 /* ── Cards grid ──────────────────────────────────────────────── */
+/* CHANGE 3: fixed 5-column equal-count grid, compact city cards */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 18px;
-  padding: 12px 20px 20px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  padding: 10px 20px 20px;
   width: 100%;
 }
+@media (max-width: 1100px) {
+  .cards-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 800px) {
+  .cards-grid { grid-template-columns: repeat(3, 1fr); }
+}
 
-/* ── Data card ───────────────────────────────────────────────── */
+/* ── Data card — compact secondary ──────────────────────────── */
 .d-card {
   background: var(--surface);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow);
-  padding: 16px 18px 14px;
+  padding: 10px 13px 9px;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--border);
@@ -329,33 +341,33 @@ button.clear-btn:hover { background: var(--bg); }
 
 /* city label above name */
 .d-card .card-city-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: .06em;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .d-card .card-head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 2px;
 }
 .d-card .card-title {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--ink);
-  line-height: 1.25;
+  line-height: 1.2;
   flex: 1;
   word-break: break-word;
 }
 .d-card .cases-badge {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  padding: 3px 8px;
+  padding: 2px 6px;
   border-radius: 20px;
   background: rgba(204,120,92,.12);
   color: var(--clay);
@@ -363,19 +375,19 @@ button.clear-btn:hover { background: var(--bg); }
   flex-shrink: 0;
 }
 .d-card .card-sub {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--muted);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   line-height: 1.3;
 }
 .d-card .hero-metric {
-  font-size: 30px;
+  font-size: 26px;
   font-weight: 800;
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 .d-card .hero-unit {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   margin-left: 2px;
 }
@@ -383,11 +395,11 @@ button.clear-btn:hover { background: var(--bg); }
 .sev-warn { color: var(--warn); }
 .sev-bad  { color: var(--bad); }
 .d-card .bar-track {
-  height: 5px;
+  height: 4px;
   background: var(--bg);
   border-radius: 3px;
   overflow: hidden;
-  margin-bottom: 10px;
+  margin-bottom: 7px;
 }
 .d-card .bar-fill {
   height: 100%;
@@ -398,7 +410,7 @@ button.clear-btn:hover { background: var(--bg); }
 .bar-fill.sev-warn { background: var(--warn); }
 .bar-fill.sev-bad  { background: var(--bad); }
 .d-card .card-foot {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--muted);
   line-height: 1.4;
   margin-top: auto;
@@ -429,11 +441,12 @@ button.clear-btn:hover { background: var(--bg); }
 }
 
 /* ── Slide-in drawer ─────────────────────────────────────────── */
+/* CHANGE 4: wider drawer ~540px */
 .emp-drawer {
   position: fixed;
   top: 0;
   right: 0;
-  width: 390px;
+  width: 540px;
   max-width: 92vw;
   height: 100%;
   background: var(--surface);
@@ -516,27 +529,51 @@ button.clear-btn:hover { background: var(--bg); }
   padding: 14px 14px 24px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
-/* ── Employee card-row ───────────────────────────────────────── */
+/* ── Employee card — CHANGE 5: big emp number, per-day rows ─── */
 .emp-card {
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: var(--radius-ctrl);
-  padding: 10px 14px;
+  border-radius: var(--radius-card);
+  padding: 14px 16px 12px;
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 8px;
   opacity: 0;
   animation: emp-fade-in .22s ease forwards;
 }
 @keyframes emp-fade-in {
   to { opacity: 1; }
 }
+
+/* Top row: big emp# + name block + summary badge */
+.emp-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* The large employee number — primary identifier */
+.emp-card-number {
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--clay);
+  letter-spacing: -.03em;
+  flex-shrink: 0;
+  min-width: 56px;
+}
+
+/* Name + route column */
 .emp-card-info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 3px;
 }
 .emp-card-name {
   font-size: 14px;
@@ -546,15 +583,16 @@ button.clear-btn:hover { background: var(--bg); }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.emp-card-sub {
-  font-size: 12px;
+.emp-card-route {
+  font-size: 11px;
   color: var(--muted);
-  margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.emp-card-meta {
+
+/* Summary: total late + cases — right side of top row */
+.emp-card-summary {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -562,7 +600,7 @@ button.clear-btn:hover { background: var(--bg); }
   flex-shrink: 0;
 }
 .emp-card-late {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
   line-height: 1;
 }
@@ -575,11 +613,44 @@ button.clear-btn:hover { background: var(--bg); }
   color: var(--clay);
   white-space: nowrap;
 }
-.emp-card-no {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 1px;
+
+/* Per-day breakdown table */
+.emp-days {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  margin-top: 0;
 }
+.emp-day-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(231,227,217,.5);
+  font-size: 12px;
+}
+.emp-day-row:last-child { border-bottom: none; }
+.emp-day-date {
+  color: var(--muted);
+  font-weight: 600;
+  min-width: 46px;
+  font-variant-numeric: tabular-nums;
+}
+.emp-day-late {
+  flex: 1;
+  color: var(--ink);
+  font-weight: 600;
+}
+.emp-day-arrival {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  min-width: 42px;
+  text-align: right;
+}
+
 .drawer-empty {
   text-align: center;
   padding: 40px 20px;
