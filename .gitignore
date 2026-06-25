@@ -5,3 +5,7 @@ build/
 dist/
 *.spec
 .pytest_cache/
+
+# Data file (PII) — never commit
+HR report.xlsx
+*.xlsx
