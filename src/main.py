@@ -4,12 +4,9 @@ import webview
 from src import config
 from src.api import Api
 
-def _web_dir():
-    base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
-    return os.path.join(base, "web" if hasattr(sys, "_MEIPASS") else "web")
-
 def _index():
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "web", "index.html")
+    base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base, "web", "index.html")
 
 def _on_start(window, api):
     path = config.get_source_path()
