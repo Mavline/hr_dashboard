@@ -30,7 +30,7 @@ def test_get_dashboard(real_xlsx, tmp_path, monkeypatch):
     api.load(real_xlsx)
     dash = api.get_dashboard({})
     # Required keys present
-    assert set(dash.keys()) == {"totals", "by_city", "by_date", "employees", "records"}
+    assert {"totals", "by_city", "by_date", "employees", "records", "roster"}.issubset(dash.keys())
     # city rows partition all lateness
     assert sum(r["total_late"] for r in dash["by_city"]) == pytest.approx(dash["totals"]["total_late"])
     # by_date row count equals number of distinct dates
@@ -49,3 +49,8 @@ def test_get_dashboard(real_xlsx, tmp_path, monkeypatch):
     assert "arrival" in first_record
     # record count equals totals cases
     assert len(dash["records"]) == dash["totals"]["cases"]
+    # all 15 cities appear
+    assert len(dash["by_city"]) == 15
+    # roster is present and has 223 entries
+    assert "roster" in dash
+    assert len(dash["roster"]) == 223

@@ -33,3 +33,18 @@ def test_unrecognized_format_raises(tmp_path):
     wb = openpyxl.Workbook(); wb.active["A1"] = "nonsense"; wb.save(p)
     with pytest.raises(er.UnrecognizedFormatError):
         er.read_records(str(p))
+
+def test_read_employees_count(real_xlsx):
+    employees = er.read_employees(real_xlsx)
+    assert len(employees) == 223
+
+def test_read_employees_distinct_cities(real_xlsx):
+    employees = er.read_employees(real_xlsx)
+    cities = {e["city"] for e in employees}
+    assert len(cities) == 15
+
+def test_read_employees_keys(real_xlsx):
+    employees = er.read_employees(real_xlsx)
+    assert len(employees) > 0
+    for key in ("employee_no", "first_name", "last_name", "city", "route"):
+        assert key in employees[0]

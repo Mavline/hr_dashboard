@@ -58,6 +58,28 @@ def _day_columns(date_row, header):
             days.append((d, i, arr))
     return days
 
+def read_employees(path):
+    wb = openpyxl.load_workbook(path, data_only=True)
+    ws = _find_sheet(wb)
+    rows = list(ws.iter_rows(values_only=True))
+    if len(rows) < 3:
+        raise UnrecognizedFormatError("Недостаточно строк")
+    header = rows[1]
+    meta = _meta_columns(header)
+    employees = []
+    for row in rows[2:]:
+        if row[meta["employee_no"]] in (None, ""):
+            continue
+        employees.append({
+            "employee_no": row[meta["employee_no"]],
+            "first_name": row[meta["first_name"]],
+            "last_name": row[meta["last_name"]],
+            "city": row[meta["city"]],
+            "route": row[meta["route"]],
+        })
+    return employees
+
+
 def read_records(path):
     wb = openpyxl.load_workbook(path, data_only=True)
     ws = _find_sheet(wb)

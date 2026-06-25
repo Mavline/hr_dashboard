@@ -4,10 +4,12 @@ from src import config, excel_reader, filters, aggregate, export
 class Api:
     def __init__(self):
         self._records = []
+        self._roster = []
         self._source = None
 
     def load(self, path):
         self._records = excel_reader.read_records(path)
+        self._roster = excel_reader.read_employees(path)
         self._source = path
         config.set_source_path(path)
         return self.get_state()
@@ -52,10 +54,11 @@ class Api:
         recs = filters.apply_filters(self._records, filt or {})
         return {
             "totals": aggregate.totals(recs),
-            "by_city": aggregate.aggregate_by(recs, "city"),
+            "by_city": aggregate.cities_full(self._roster, recs),
             "by_date": aggregate.aggregate_by(recs, "date"),
             "employees": aggregate.aggregate_by(recs, "employee"),
             "records": recs,
+            "roster": self._roster,
         }
 
     def export(self, filt, view, fmt):

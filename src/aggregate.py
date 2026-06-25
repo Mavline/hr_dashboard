@@ -30,6 +30,42 @@ _KEY = {
 }
 
 
+def cities_full(roster, records):
+    # Build city -> employee_no set from the full roster
+    city_employees = defaultdict(set)
+    for emp in roster:
+        city = emp.get("city")
+        if city:
+            city_employees[city].add(emp["employee_no"])
+
+    # Build city -> delay metrics from (filtered) records
+    city_records = defaultdict(list)
+    for r in records:
+        city = r.get("city")
+        if city:
+            city_records[city].append(r)
+
+    # Union of all cities from roster
+    all_cities = set(city_employees.keys())
+
+    out = []
+    for city in all_cities:
+        recs = city_records.get(city, [])
+        cases = len(recs)
+        total_late = sum(r["late_min"] for r in recs)
+        out.append({
+            "key": [city],
+            "employees": len(city_employees[city]),
+            "cases": cases,
+            "total_late": total_late,
+            "avg_late": round(total_late / cases, 1) if cases else 0,
+            "routes": len({r["route"] for r in recs}),
+        })
+
+    out.sort(key=lambda x: (x["total_late"], x["cases"]), reverse=True)
+    return out
+
+
 def aggregate_by(records, view):
     keyfn = _KEY[view]
     groups = defaultdict(list)

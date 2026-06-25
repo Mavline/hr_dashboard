@@ -93,6 +93,37 @@ def test_aggregate_by_city_real(real_xlsx):
         assert len(row["key"]) == 1
 
 
+def test_cities_full_count(real_xlsx):
+    roster = excel_reader.read_employees(real_xlsx)
+    records = excel_reader.read_records(real_xlsx)
+    rows = aggregate.cities_full(roster, records)
+    assert len(rows) == 15
+
+
+def test_cities_full_sorted_by_total_late_desc(real_xlsx):
+    roster = excel_reader.read_employees(real_xlsx)
+    records = excel_reader.read_records(real_xlsx)
+    rows = aggregate.cities_full(roster, records)
+    totals_seq = [r["total_late"] for r in rows]
+    assert totals_seq == sorted(totals_seq, reverse=True)
+
+
+def test_cities_full_delay_free_cities_have_zeros(real_xlsx):
+    roster = excel_reader.read_employees(real_xlsx)
+    records = excel_reader.read_records(real_xlsx)
+    rows = aggregate.cities_full(roster, records)
+    # At least one city must have cases==0 and total_late==0 but employees>0
+    delay_free = [r for r in rows if r["cases"] == 0 and r["total_late"] == 0 and r["employees"] > 0]
+    assert len(delay_free) >= 1
+
+
+def test_cities_full_cases_sum_equals_records(real_xlsx):
+    roster = excel_reader.read_employees(real_xlsx)
+    records = excel_reader.read_records(real_xlsx)
+    rows = aggregate.cities_full(roster, records)
+    assert sum(r["cases"] for r in rows) == len(records)
+
+
 def test_aggregate_by_weekday_basic():
     recs = [
         {"employee_no": 1, "first_name": "John", "last_name": "Doe",
