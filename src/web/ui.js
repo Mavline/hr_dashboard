@@ -93,39 +93,64 @@ const App = (() => {
 
   }
 
-  // ── Render employees table ─────────────────────────────────────
-  function renderEmployees(rows) {
-    const tbody = document.getElementById("emp-tbody");
+  // ── Render drawer content (card-rows) ─────────────────────────
+  function renderDrawer(employees) {
+    const drawer   = document.getElementById("emp-drawer");
+    const overlay  = document.getElementById("emp-overlay");
+    const cityEl   = document.getElementById("drawer-city");
+    const countEl  = document.getElementById("drawer-count");
+    const bodyEl   = document.getElementById("drawer-body");
 
-    if (!rows || rows.length === 0) {
-      tbody.innerHTML =
-        '<tr><td colspan="7" class="emp-table-empty">No employee data for current filters.</td></tr>';
+    if (!selectedCity) {
+      drawer.classList.remove("drawer-open");
+      overlay.classList.remove("overlay-visible");
       return;
     }
 
-    // Sort by total_late desc (already sorted by backend, but enforce client-side)
+    // Filter to selected city's employees only
+    const rows = (employees || []).filter(r => r.key[3] === selectedCity);
     const sorted = [...rows].sort((a, b) => (b.total_late ?? 0) - (a.total_late ?? 0));
 
-    tbody.innerHTML = sorted.map(row => {
-      // key: [emp_no, first, last, city, route]
-      const empNo = row.key[0];
-      const first = row.key[1];
-      const last  = row.key[2];
-      const city  = row.key[3];
-      const route = row.key[4];
+    cityEl.textContent  = selectedCity;
+    countEl.textContent = sorted.length + (sorted.length === 1 ? " person" : " people");
 
-      return (
-        "<tr>" +
-          '<td class="emp-no-cell">' + esc(empNo) + "</td>" +
-          '<td dir="auto">' + esc(last) + "</td>" +
-          '<td dir="auto">' + esc(first) + "</td>" +
-          '<td dir="auto">' + esc(city) + "</td>" +
-          '<td dir="auto">' + esc(route) + "</td>" +
-          '<td class="num-cell">' + esc(row.cases) + "</td>" +
-          '<td class="num-cell">' + esc(row.total_late) + "</td>" +
-        "</tr>"
-      );
-    }).join("");
+    if (sorted.length === 0) {
+      bodyEl.innerHTML = '<div class="drawer-empty">No employee data for this city.</div>';
+    } else {
+      bodyEl.innerHTML = sorted.map((row, i) => {
+        // key: [emp_no, first, last, city, route]
+        const empNo = row.key[0];
+        const first = row.key[1];
+        const last  = row.key[2];
+        const route = row.key[4];
+        const sev   = severity(row.avg_late ?? 0);
+        // stagger: each card slightly delayed
+        const delay = (i * 35) + "ms";
+
+        return (
+          '<div class="emp-card" style="animation-delay:' + delay + '">' +
+            '<div class="emp-card-info">' +
+              '<div class="emp-card-name" dir="auto">' + esc(last) + " " + esc(first) + "</div>" +
+              '<div class="emp-card-sub" dir="auto">route &middot; ' + esc(route) + "</div>" +
+              '<div class="emp-card-no">#' + esc(empNo) + "</div>" +
+            "</div>" +
+            '<div class="emp-card-meta">' +
+              '<div class="emp-card-late ' + sev + '">' + esc(row.total_late) + '<span style="font-size:11px;font-weight:500;margin-left:2px">min</span></div>' +
+              '<div class="emp-card-cases">' + esc(row.cases) + " cases</div>" +
+            "</div>" +
+          "</div>"
+        );
+      }).join("");
+    }
+
+    drawer.classList.add("drawer-open");
+    overlay.classList.add("overlay-visible");
+  }
+
+  // ── Close drawer helper ────────────────────────────────────────
+  function closeDrawer() {
+    selectedCity = null;
+    render();
   }
 
   // ── Main render ────────────────────────────────────────────────
@@ -133,7 +158,7 @@ const App = (() => {
     const d = api() ? await api().get_dashboard(filt()) : window.MOCK_DASHBOARD;
     renderKPI(d.totals);
     renderCities(d.by_city);
-    renderEmployees(d.employees);
+    renderDrawer(d.employees);
   }
 
   // ── Autocomplete ───────────────────────────────────────────────
@@ -200,6 +225,17 @@ const App = (() => {
       const city = card.dataset.city;
       selectedCity = (selectedCity === city) ? null : city;
       render();
+    });
+
+    // Drawer close: × button
+    document.getElementById("drawer-close").addEventListener("click", closeDrawer);
+
+    // Drawer close: backdrop overlay
+    document.getElementById("emp-overlay").addEventListener("click", closeDrawer);
+
+    // Drawer close: Escape key
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && selectedCity !== null) closeDrawer();
     });
 
     // Sort-by: re-render (no API fetch needed — renderCities re-sorts in memory)

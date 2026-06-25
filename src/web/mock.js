@@ -23,12 +23,19 @@ window.MOCK_DASHBOARD = {
   ],
   employees: [
     { key: [12,  "אלונה", "שאמלי",    "יהוד",       "יהוד- קרית אונו"],  cases: 4, total_late: 118, avg_late: 29.5 },
-    { key: [370, "ילנה",  "בוטוב",    "אריאל",      "פתח תקווה"],         cases: 3, total_late: 61,  avg_late: 20.3 },
-    { key: [88,  "דוד",   "כהן",      "לוד",         "לוד"],              cases: 2, total_late: 22,  avg_late: 11.0 },
     { key: [205, "מרים",  "לוי",      "יהוד",        "פתח תקווה"],        cases: 5, total_late: 95,  avg_late: 19.0 },
+    { key: [301, "יעל",   "אברהם",    "יהוד",        "יהוד- קרית אונו"],  cases: 3, total_late: 54,  avg_late: 18.0 },
+    { key: [370, "ילנה",  "בוטוב",    "אריאל",      "פתח תקווה"],         cases: 3, total_late: 61,  avg_late: 20.3 },
+    { key: [415, "אמיר",  "שפירא",    "אריאל",      "פתח תקווה"],         cases: 2, total_late: 48,  avg_late: 24.0 },
+    { key: [88,  "דוד",   "כהן",      "לוד",         "לוד"],              cases: 2, total_late: 22,  avg_late: 11.0 },
+    { key: [134, "חנה",   "מזרחי",    "לוד",         "לוד"],              cases: 3, total_late: 71,  avg_late: 23.7 },
+    { key: [222, "אסף",   "ביטון",    "לוד",         "לוד"],              cases: 1, total_late: 15,  avg_late: 15.0 },
     { key: [44,  "עלי",   "אבו-עמר",  "פתח תקווה",   "פתח תקווה"],        cases: 6, total_late: 124, avg_late: 20.7 },
-    { key: [99,  "יוסי",  "פרץ",      "רמת גן",      "רמת גן מרכז"],      cases: 5, total_late: 87,  avg_late: 17.4 },
     { key: [77,  "נועה",  "גרין",     "פתח תקווה",   "נתניה דרום"],       cases: 6, total_late: 117, avg_late: 19.5 },
-    { key: [33,  "משה",   "רוזן",     "נתניה",       "נתניה דרום"],       cases: 8, total_late: 160, avg_late: 20.0 }
+    { key: [188, "טל",    "כץ",       "פתח תקווה",   "פתח תקווה"],        cases: 4, total_late: 68,  avg_late: 17.0 },
+    { key: [99,  "יוסי",  "פרץ",      "רמת גן",      "רמת גן מרכז"],      cases: 5, total_late: 87,  avg_late: 17.4 },
+    { key: [250, "שרה",   "כהן",      "רמת גן",      "רמת גן מרכז"],      cases: 4, total_late: 62,  avg_late: 15.5 },
+    { key: [33,  "משה",   "רוזן",     "נתניה",       "נתניה דרום"],       cases: 8, total_late: 160, avg_late: 20.0 },
+    { key: [410, "רחל",   "דהן",      "נתניה",       "נתניה דרום"],       cases: 3, total_late: 55,  avg_late: 18.3 }
   ]
 };

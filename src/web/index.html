@@ -41,27 +41,23 @@
 
   <div class="scroll-area" id="scroll-area">
     <div class="cards-grid" id="cards-grid"></div>
-
-    <section class="emp-table-section">
-      <h2 class="section-heading">Employees</h2>
-      <div class="table-wrap">
-        <table id="emp-table" class="emp-table">
-          <thead>
-            <tr>
-              <th>Employee No</th>
-              <th>Last Name</th>
-              <th>First Name</th>
-              <th>City</th>
-              <th>Route</th>
-              <th>Cases</th>
-              <th>Total Late (min)</th>
-            </tr>
-          </thead>
-          <tbody id="emp-tbody"></tbody>
-        </table>
-      </div>
-    </section>
   </div>
+
+  <!-- Backdrop overlay -->
+  <div id="emp-overlay" class="emp-overlay"></div>
+
+  <!-- Slide-in drawer -->
+  <aside id="emp-drawer" class="emp-drawer" role="dialog" aria-modal="true" aria-label="Employee details">
+    <div class="drawer-header">
+      <div class="drawer-title-block">
+        <span class="drawer-label">EMPLOYEES</span>
+        <span class="drawer-city" id="drawer-city" dir="auto"></span>
+      </div>
+      <span class="drawer-count" id="drawer-count"></span>
+      <button id="drawer-close" class="drawer-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </aside>
 
   <script src="mock.js"></script>
   <script src="ui.js"></script>
