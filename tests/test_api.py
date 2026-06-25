@@ -54,3 +54,7 @@ def test_get_dashboard(real_xlsx, tmp_path, monkeypatch):
     # roster is present and has 223 entries
     assert "roster" in dash
     assert len(dash["roster"]) == 223
+    # full-roster totals for KPI
+    assert dash["totals"]["employees_total"] == 223
+    assert dash["totals"]["cities_total"] == 15
+    assert dash["totals"]["routes_total"] > 0

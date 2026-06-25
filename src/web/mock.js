@@ -10,7 +10,8 @@ window.MOCK_STATE = {
 };
 
 window.MOCK_DASHBOARD = {
-  totals: { cases: 59, total_late: 1048, employees: 20, routes: 7, days: 8 },
+  totals: { cases: 59, total_late: 1048, employees: 20, routes: 7, days: 8,
+            employees_total: 20, cities_total: 9, routes_total: 7 },
   by_city: [
     // Cities WITH delays — sorted by desc cases (backend order)
     { key: ["פתח תקווה"],  cases: 16, total_late: 309, avg_late: 19.3, employees: 3, routes: 2 },

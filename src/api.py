@@ -52,8 +52,12 @@ class Api:
 
     def get_dashboard(self, filt):
         recs = filters.apply_filters(self._records, filt or {})
+        t = aggregate.totals(recs)
+        t["employees_total"] = len({e["employee_no"] for e in self._roster})
+        t["cities_total"] = len({e["city"] for e in self._roster if e.get("city")})
+        t["routes_total"] = len({e["route"] for e in self._roster if e.get("route")})
         return {
-            "totals": aggregate.totals(recs),
+            "totals": t,
             "by_city": aggregate.cities_full(self._roster, recs),
             "by_date": aggregate.aggregate_by(recs, "date"),
             "employees": aggregate.aggregate_by(recs, "employee"),

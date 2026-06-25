@@ -98,6 +98,18 @@ button.clear-btn {
 }
 button.clear-btn:hover { background: var(--bg); }
 
+/* Change-file button — clay accent outline; reads as actionable without
+   overshadowing the filled Export (primary) button */
+button#btn-file {
+  border: 1.5px solid var(--clay);
+  color: var(--clay);
+  background: transparent;
+}
+button#btn-file:hover {
+  background: var(--clay);
+  color: #fff;
+}
+
 /* ── Totals strip ────────────────────────────────────────────── */
 /* CHANGE 1: bigger, more dominant KPI strip */
 .totals-strip {

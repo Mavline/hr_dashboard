@@ -8,6 +8,9 @@ const App = (() => {
   // Cross-filter: currently selected city (null = no filter)
   let selectedCity = null;
 
+  // Guard: ensure wire() attaches handlers exactly once even if init() runs twice
+  let _wired = false;
+
   function filt() {
     return {
       employee: document.getElementById("f-emp").value,
@@ -36,11 +39,11 @@ const App = (() => {
   // ── Render KPI strip ───────────────────────────────────────────
   function renderKPI(t) {
     const defs = [
-      ["cases",      "Cases",            false],
-      ["total_late", "Total Late (min)", true ],
-      ["employees",  "Employees",        false],
-      ["routes",     "Routes",           false],
-      ["days",       "Days",             false],
+      ["cases",           "Cases",            false],
+      ["total_late",      "Total Late (min)", true ],
+      ["employees_total", "Employees",        false],
+      ["cities_total",    "Cities",           false],
+      ["routes_total",    "Routes",           false],
     ];
     document.getElementById("totals-strip").innerHTML = defs.map(([k, label, hero]) =>
       '<div class="t-card' + (hero ? " hero" : "") + '">' +
@@ -323,13 +326,18 @@ const App = (() => {
     });
   }
 
-  // ── Init / wire ────────────────────────────────────────────────
-  async function wire() {
-    // Fetch state once and cache it
+  // ── Load state (runs on every init so real state replaces mock) ──
+  async function loadState() {
     const st = api() ? await api().get_state() : window.MOCK_STATE;
     _state = { employees: (st && st.employees) || [], source_path: (st && st.source_path) || null };
-
     document.getElementById("path").textContent = _state.source_path || "—";
+  }
+
+  // ── Init / wire ────────────────────────────────────────────────
+  async function wire() {
+    // Idempotent: attach all event handlers exactly once
+    if (_wired) return;
+    _wired = true;
 
     wireAutocomplete();
 
@@ -384,8 +392,8 @@ const App = (() => {
       await render();
     });
 
-    // Change file
-    document.getElementById("btn-file").onclick = async () => {
+    // Change file (addEventListener for idempotency consistency)
+    document.getElementById("btn-file").addEventListener("click", async () => {
       if (api()) {
         const newState = await api().choose_file();
         if (newState) {
@@ -394,7 +402,7 @@ const App = (() => {
         }
       }
       await render();
-    };
+    });
 
     // Export
     document.getElementById("btn-export").addEventListener("click", async () => {
@@ -403,7 +411,7 @@ const App = (() => {
   }
 
   return {
-    async init() { await wire(); await render(); },
+    async init() { await loadState(); await wire(); await render(); },
     needFile() {
       document.getElementById("path").textContent = 'No file selected — use "Change file…"';
     },
