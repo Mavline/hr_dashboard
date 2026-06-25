@@ -34,12 +34,19 @@
         <option value="avg_late">Avg Late</option>
       </select>
     </label>
-    <label>Employee <input id="f-emp" type="search" placeholder="name / no"></label>
+    <label>Employee
+      <div class="emp-wrap">
+        <input id="f-emp" type="search" placeholder="name / no">
+        <div id="emp-suggest" class="suggest" hidden></div>
+      </div>
+    </label>
     <label>From <input id="f-from" type="date"></label>
     <label>To <input id="f-to" type="date"></label>
   </section>
 
-  <div class="cards-grid" id="cards-grid"></div>
+  <div class="cards-area" id="cards-area">
+    <div class="cards-grid" id="cards-grid"></div>
+  </div>
 
   <script src="mock.js"></script>
   <script src="ui.js"></script>

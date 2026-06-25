@@ -8,6 +8,9 @@ def test_load_and_state(real_xlsx, tmp_path, monkeypatch):
     assert state["loaded"] is True
     assert state["date_min"] == "2026-06-01"
     assert "פתח תקווה" in state["routes"]
+    assert "employees" in state
+    assert isinstance(state["employees"], list)
+    assert len(state["employees"]) > 0
 
 def test_get_view_route(real_xlsx, tmp_path, monkeypatch):
     from src import config

@@ -2,6 +2,9 @@ const App = (() => {
   const api = () => (window.pywebview && window.pywebview.api) || null;
   const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
+  // Cached state (employees list + path)
+  let _state = { employees: [], source_path: null };
+
   function filt() {
     return {
       employee: document.getElementById("f-emp").value,
@@ -113,22 +116,93 @@ const App = (() => {
 
   async function render() {
     const data = await getView();
-    if (data.state) {
-      document.getElementById("path").textContent =
-        data.state.source_path || "—";
-    }
     renderTotals(data.totals);
     renderGrid(view(), data.rows);
   }
 
-  function wire() {
+  // ── Autocomplete ────────────────────────────────────────────
+  function hideSuggest() {
+    const box = document.getElementById("emp-suggest");
+    box.hidden = true;
+    box.innerHTML = "";
+  }
+
+  function showSuggest(matches) {
+    const box = document.getElementById("emp-suggest");
+    if (matches.length === 0) { hideSuggest(); return; }
+    box.innerHTML = matches.map(name =>
+      '<div class="suggest-item" dir="auto">' + esc(name) + "</div>"
+    ).join("");
+    box.hidden = false;
+    box.querySelectorAll(".suggest-item").forEach(item => {
+      item.addEventListener("mousedown", e => {
+        // mousedown fires before blur; prevent blur hiding the list first
+        e.preventDefault();
+        document.getElementById("f-emp").value = item.textContent;
+        hideSuggest();
+        render();
+      });
+    });
+  }
+
+  function wireAutocomplete() {
+    const inp = document.getElementById("f-emp");
+
+    inp.addEventListener("input", () => {
+      const q = inp.value.trim().toLowerCase();
+      if (!q) { hideSuggest(); return; }
+      const matches = _state.employees
+        .filter(n => n.toLowerCase().includes(q))
+        .slice(0, 8);
+      showSuggest(matches);
+    });
+
+    inp.addEventListener("keydown", e => {
+      if (e.key === "Escape") hideSuggest();
+    });
+
+    document.addEventListener("click", e => {
+      if (!e.target.closest(".emp-wrap")) hideSuggest();
+    });
+  }
+
+  // ── Init ────────────────────────────────────────────────────
+  async function wire() {
+    // Fetch state once and cache it
+    let st;
+    if (api()) {
+      st = await api().get_state();
+    } else {
+      st = (window.MOCK_VIEW && window.MOCK_VIEW.state) || {};
+    }
+    _state = { employees: st.employees || [], source_path: st.source_path || null };
+
+    // Set path display from cached state
+    document.getElementById("path").textContent = _state.source_path || "—";
+
+    wireAutocomplete();
+
     ["view", "f-emp", "f-from", "f-to", "sort-by"].forEach(id =>
       document.getElementById(id).addEventListener("input", render));
     document.getElementById("btn-file").onclick = async () => {
-      if (api()) { await api().choose_file(); await render(); }
+      if (api()) {
+        const newState = await api().choose_file();
+        if (newState) {
+          _state = { employees: newState.employees || [], source_path: newState.source_path || null };
+          document.getElementById("path").textContent = _state.source_path || "—";
+        }
+        await render();
+      }
     };
     document.getElementById("btn-refresh").onclick = async () => {
-      if (api()) { await api().refresh(); await render(); }
+      if (api()) {
+        const newState = await api().refresh();
+        if (newState) {
+          _state = { employees: newState.employees || [], source_path: newState.source_path || null };
+          document.getElementById("path").textContent = _state.source_path || "—";
+        }
+        await render();
+      }
     };
     document.getElementById("btn-export").onclick = async () => {
       if (api()) { await api().export(filt(), view(), "xlsx"); await render(); }
@@ -136,7 +210,7 @@ const App = (() => {
   }
 
   return {
-    init() { wire(); render(); },
+    async init() { await wire(); await render(); },
     needFile() {
       document.getElementById("path").textContent =
         'No file selected — use "Change file…"';

@@ -2,7 +2,8 @@ window.MOCK_VIEW = {
   state: {
     source_path: "C:\\...\\HR report.xlsx",
     date_min: "2026-06-01", date_max: "2026-06-07",
-    cities: ["יהוד", "אריאל", "לוד"], routes: ["פתח תקווה", "יהוד- קרית אונו", "לוד"]
+    cities: ["יהוד", "אריאל", "לוד"], routes: ["פתח תקווה", "יהוד- קרית אונו", "לוד"],
+    employees: ["בוטוב ילנה", "interim-placeholder", "כהן דוד", "לוי מרים", "שאמלי אלונה"]
   },
   totals: { cases: 53, total_late: 1117, employees: 46, routes: 3, days: 7 },
   rows: [

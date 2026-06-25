@@ -21,13 +21,18 @@
 
 /* ── Reset ──────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
-body {
+html, body {
+  height: 100%;
   margin: 0;
+}
+body {
   font: 14px/1.5 var(--font);
   color: var(--ink);
   background: var(--bg);
-  min-height: 100vh;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 /* ── Header ─────────────────────────────────────────────────── */
@@ -202,6 +207,37 @@ button.secondary:hover { background: rgba(245,244,238,.08); }
   min-width: 160px;
 }
 
+/* employee autocomplete wrapper */
+.emp-wrap {
+  position: relative;
+}
+
+/* suggestions dropdown */
+.suggest {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-ctrl);
+  box-shadow: var(--shadow-lg);
+  max-height: 240px;
+  overflow-y: auto;
+  margin-top: 4px;
+}
+.suggest[hidden] { display: none; }
+.suggest-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+}
+.suggest-item:last-child { border-bottom: none; }
+.suggest-item:hover { background: var(--bg); }
+
 /* date inputs */
 .controls input[type=date] {
   min-width: 140px;
@@ -222,12 +258,19 @@ button.secondary:hover { background: rgba(245,244,238,.08); }
   opacity: .7;
 }
 
+/* ── Cards area (scrollable, fills remaining height) ─────────── */
+.cards-area {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 /* ── Cards grid ──────────────────────────────────────────────── */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  padding: 8px 20px 24px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+  padding: 12px 20px 28px;
   width: 100%;
 }
 

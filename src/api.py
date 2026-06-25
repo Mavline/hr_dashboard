@@ -14,6 +14,11 @@ class Api:
 
     def get_state(self):
         dates = sorted({r["date"] for r in self._records})
+        employees = sorted({
+            f"{r.get('last_name', '')} {r.get('first_name', '')}".strip()
+            for r in self._records
+            if r.get("last_name") or r.get("first_name")
+        })
         return {
             "source_path": self._source,
             "date_min": dates[0] if dates else None,
@@ -21,6 +26,7 @@ class Api:
             "cities": sorted({r["city"] for r in self._records if r["city"]}),
             "routes": sorted({r["route"] for r in self._records if r["route"]}),
             "loaded": bool(self._records),
+            "employees": employees,
         }
 
     def get_view(self, filt, view):
