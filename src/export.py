@@ -12,6 +12,8 @@ _METRIC_HEADERS = ["Cases", "Total Late (min)", "Avg Late (min)",
                    "Employees", "Routes"]
 
 def _header(view):
+    if view not in _KEY_HEADERS:
+        raise ValueError(f"Unknown view: {view!r}")
     return _KEY_HEADERS[view] + _METRIC_HEADERS
 
 def _row_values(row):
@@ -34,4 +36,4 @@ def write(path, rows, view, fmt):
             ws.append(_row_values(r))
         wb.save(path)
     else:
-        raise ValueError(f"Неизвестный формат: {fmt}")
+        raise ValueError(f"Unknown format: {fmt!r}")
