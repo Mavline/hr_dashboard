@@ -55,6 +55,7 @@ class Api:
             "by_city": aggregate.aggregate_by(recs, "city"),
             "by_date": aggregate.aggregate_by(recs, "date"),
             "employees": aggregate.aggregate_by(recs, "employee"),
+            "records": recs,
         }
 
     def export(self, filt, view, fmt):
