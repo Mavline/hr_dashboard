@@ -752,8 +752,8 @@ button#btn-file:hover {
   <input type="file" id="hidden-file-input" accept=".xlsx,.xls" style="display:none">
 
   <div id="first-hint" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:48px 20px;text-align:center;color:var(--muted);font-size:15px;line-height:1.7">
-    <div>Нажми <b style="color:var(--ink)">«Change file…»</b> вверху и выбери свою таблицу <b style="color:var(--ink)">один раз</b>.</div>
-    <div style="font-size:13px">Дальше дашборд будет открываться сам, с этими данными — выбирать файл больше не нужно.</div>
+    <div>Click <b style="color:var(--ink)">“Change file…”</b> at the top and pick your spreadsheet <b style="color:var(--ink)">once</b>.</div>
+    <div style="font-size:13px">The dashboard will then open by itself with this data — no need to choose the file again.</div>
   </div>
 
   <div id="dash" style="display:none">
@@ -929,7 +929,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
         }
       }
     }
-    throw new Error("Лист с ожидаемыми заголовками не найден");
+    throw new Error("No sheet with the expected headers found");
   }
 
   // ── Column index helpers ─────────────────────────────────────────────────
@@ -941,7 +941,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
       if (cell && META[cell]) idx[META[cell]] = i;
     });
     const missing = Object.values(META).filter(k => !(k in idx));
-    if (missing.length > 0) throw new Error("Не найдены колонки: " + missing.join(", "));
+    if (missing.length > 0) throw new Error("Missing columns: " + missing.join(", "));
     return idx;
   }
 
@@ -974,7 +974,7 @@ t.sheetStubs=true}if(t.type=="array"){t.type="binary";var a=xk(e,t);t.type="arra
     const workbook = XLSX.read(data, { type: "array", cellDates: true });
 
     const { rows } = findSheet(workbook);
-    if (rows.length < 3) throw new Error("Недостаточно строк");
+    if (rows.length < 3) throw new Error("Not enough rows");
 
     const dateRow  = rows[0];   // row 1 in Excel: dates above each late column
     const header   = rows[1];   // row 2 in Excel: column headers

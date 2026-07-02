@@ -102,7 +102,7 @@
         }
       }
     }
-    throw new Error("Лист с ожидаемыми заголовками не найден");
+    throw new Error("No sheet with the expected headers found");
   }
 
   // ── Column index helpers ─────────────────────────────────────────────────
@@ -114,7 +114,7 @@
       if (cell && META[cell]) idx[META[cell]] = i;
     });
     const missing = Object.values(META).filter(k => !(k in idx));
-    if (missing.length > 0) throw new Error("Не найдены колонки: " + missing.join(", "));
+    if (missing.length > 0) throw new Error("Missing columns: " + missing.join(", "));
     return idx;
   }
 
@@ -147,7 +147,7 @@
     const workbook = XLSX.read(data, { type: "array", cellDates: true });
 
     const { rows } = findSheet(workbook);
-    if (rows.length < 3) throw new Error("Недостаточно строк");
+    if (rows.length < 3) throw new Error("Not enough rows");
 
     const dateRow  = rows[0];   // row 1 in Excel: dates above each late column
     const header   = rows[1];   // row 2 in Excel: column headers
