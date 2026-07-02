@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "PWSH=\"$(command -v pwsh || echo \"$LOCALAPPDATA/Microsoft/WindowsApps/pwsh.exe\")\"; REPO=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; \"$PWSH\" -NoProfile -ExecutionPolicy Bypass -File \"$REPO/memgraph/memgraph.ps1\" session-context"
+          }
+        ]
+      }
+    ]
+  }
+}

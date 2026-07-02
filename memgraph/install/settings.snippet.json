@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "REPO=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; if [ -f \"$REPO/.agent/memory.db\" ]; then \"$REPO/memgraph/memgraph\" session-context; else echo \"memgraph: no .agent/memory.db in $REPO — skill idle\"; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

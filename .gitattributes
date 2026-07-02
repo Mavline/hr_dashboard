@@ -1,0 +1,4 @@
+# bash wrapper must stay LF (shebang script; CRLF breaks it on macOS/Linux)
+memgraph/memgraph text eol=lf
+# canonical project memory is binary SQLite
+.agent/memory.db binary

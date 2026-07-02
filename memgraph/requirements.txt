@@ -1,0 +1,3 @@
+openai>=1.40.0
+sqlite-vec>=0.1.6
+tiktoken>=0.7.0
