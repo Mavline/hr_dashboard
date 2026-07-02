@@ -216,7 +216,6 @@
     const emp = (filt.employee || "").trim().toLowerCase();
     if (emp) {
       res = res.filter(r =>
-        emp in String(r.employee_no ?? "").toLowerCase() ||
         String(r.employee_no ?? "").toLowerCase().includes(emp) ||
         (r.first_name  || "").toLowerCase().includes(emp) ||
         (r.last_name   || "").toLowerCase().includes(emp)
