@@ -1,11 +1,15 @@
-__pycache__/
-*.pyc
-config.json
-build/
-dist/
-*.spec
-.pytest_cache/
+# secrets — never commit
+.env
 
-# Data file (PII) — never commit
+# data (PII) — never commit
 HR report.xlsx
 *.xlsx
+
+# memgraph: per-machine layers, rebuilt on each machine (see memgraph/install/README.md)
+memgraph/venv/
+memgraph/vendor/
+
+# .agent: track only the canonical memory DB and frozen task specs
+.agent/*
+!.agent/memory.db
+!.agent/tasks/

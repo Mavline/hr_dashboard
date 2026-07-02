@@ -313,6 +313,7 @@
         records = parsed.records;
         roster  = parsed.roster;
         state   = Engine.buildState(records, roster);
+        try { localStorage.setItem("xlsxData", _bufToB64(buf)); localStorage.setItem("xlsxName", file.name); } catch (e) {}
         showDashboard();
         render();
       } catch (err) {
@@ -324,10 +325,8 @@
   }
 
   function showDashboard() {
-    const dz = document.getElementById("dropzone-wrapper");
-    const db = document.getElementById("dashboard-wrapper");
-    if (dz) dz.hidden = true;
-    if (db) db.hidden = false;
+    var h = document.getElementById("first-hint"); if (h) h.style.display = "none";
+    var d = document.getElementById("dash");       if (d) d.style.display = "";
     wireOnce();
   }
 
@@ -376,11 +375,6 @@
     // Refresh — re-use in-memory data (can't re-open file silently in browser)
     document.getElementById("btn-refresh").addEventListener("click", () => {
       render();
-    });
-
-    // Change file — hidden input trigger
-    document.getElementById("btn-file").addEventListener("click", () => {
-      document.getElementById("hidden-file-input").click();
     });
 
     // Export
@@ -442,8 +436,26 @@
   }
 
   // ── Boot ─────────────────────────────────────────────────────────────────
+  function _bufToB64(buf){ var b=new Uint8Array(buf), s="", CH=0x8000; for (var i=0;i<b.length;i+=CH){ s+=String.fromCharCode.apply(null, b.subarray(i,i+CH)); } return btoa(s); }
+  function _b64ToBuf(b64){ var s=atob(b64), u=new Uint8Array(s.length); for (var i=0;i<s.length;i++){ u[i]=s.charCodeAt(i); } return u.buffer; }
   document.addEventListener("DOMContentLoaded", () => {
-    wireLanding();
+    var hi = document.getElementById("hidden-file-input");
+    var bf = document.getElementById("btn-file");
+    if (bf && hi) bf.addEventListener("click", function(){ hi.click(); });
+    if (hi) hi.addEventListener("change", function(){ if (hi.files[0]) loadFile(hi.files[0]); hi.value=""; });
+    var saved = null; try { saved = localStorage.getItem("xlsxData"); } catch (e) {}
+    if (saved) {
+      try {
+        var parsed = Engine.parseWorkbook(_b64ToBuf(saved));
+        records = parsed.records; roster = parsed.roster;
+        state = Engine.buildState(records, roster);
+        var nm = null; try { nm = localStorage.getItem("xlsxName"); } catch (e) {}
+        var p = document.getElementById("path"); if (p) p.textContent = nm || "saved data";
+        showDashboard(); render();
+      } catch (e) {
+        var h = document.getElementById("first-hint"); if (h) h.style.display = "";
+      }
+    }
   });
 
 })();

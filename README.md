@@ -1,36 +1,59 @@
 # Bus Delays Dashboard
 
-Desktop app to analyze company shuttle delays from `HR report.xlsx`.
+Standalone, single-file dashboard to analyze company shuttle delays from
+`HR report.xlsx`. Power BI–style: KPI cards, slicers, city cards with
+cross-filtering, and a per-employee drill-in drawer showing real arrival
+times (for payroll checks).
 
-A Power BI–style dashboard: KPI cards, slicers, city cards with cross-filtering,
-and a per-employee drill-in panel showing real arrival times (for payroll checks).
+**The deliverable is one file — `BusDelaysDashboard.html`.** Open it in any
+modern browser (Edge/Chrome), pick the Excel file once via *Change file…* —
+the dashboard then reopens by itself with the saved data (localStorage).
+No installation, no executable: it runs on locked-down corporate machines
+where unsigned `.exe` files are blocked by policy-managed Defender.
 
-## Tech stack
-Python + `pywebview` (WebView2 on Windows), `openpyxl`; HTML/CSS/JS front-end;
-packaged into a standalone executable with PyInstaller.
+## Tech
 
-## Development
-- `pip install -r requirements.txt`
-- Tests: `python -m pytest -v`
-- Run from source: `python -m src.main`
-
-## Build the executable
-```
-pyinstaller --onedir --noconsole --icon bus.ico --add-data "src/web;web" --name BusDelaysDashboard src/main.py
-```
-On Windows Defender may flag an unsigned PyInstaller build; add the output
-folder to Defender exclusions (or sign the executable) so it runs.
-The resulting `dist/razvozki/` folder is self-contained — **Python is not required on
-target machines** (only WebView2, preinstalled on Windows 11). The app stores
-`config.json` (the saved path to the source file) next to the executable, so it
-remembers the file between launches. Prefer `--onedir` (a folder) over `--onefile`:
-it avoids the temp-unpack step that some antivirus tools and non-ASCII paths block.
-
-## Data privacy
-`HR report.xlsx` contains personal data and is git-ignored — it is never committed.
+Vanilla HTML/CSS/JS. Excel parsing in the browser via the vendored
+[SheetJS](https://sheetjs.com/) (`src/web/xlsx.full.min.js`). No framework,
+no server, no build toolchain beyond PowerShell.
 
 ## Project layout
-- `src/` — `config`, `excel_reader` (parse + unpivot), `filters`, `aggregate`,
-  `export`, `api` (UI bridge), `main` (window); `src/web/` — the dashboard UI.
-- `tests/` — pytest suite (parsing, filters, aggregation, export, API).
-- `docs/superpowers/` — design spec and implementation plan.
+
+- `src/web/standalone.html` — page skeleton (references the three scripts + css)
+- `src/web/engine.js` — data engine: parse + unpivot the wide HR sheet, filters, aggregation
+- `src/web/web-app.js` — UI glue: rendering, cross-filter, drawer, persistence
+- `src/web/styles.css` — styles (Claude/Anthropic palette)
+- `src/web/xlsx.full.min.js` — vendored SheetJS
+- `build.ps1` — inlines the sources into the single-file `BusDelaysDashboard.html`
+- `docs/spec.md` — canonical strategic document (product decisions, data contract, control numbers)
+- `memgraph/` + `.agent/memory.db` — project process memory (see `AGENTS.md`)
+
+## Build
+
+```powershell
+pwsh ./build.ps1
+```
+
+Rebuilds `BusDelaysDashboard.html` from `src/web/`. The transform is a pure
+inline (round-trip verified byte-identical), so edit the sources, rebuild,
+and ship the single file.
+
+## Verification
+
+There is no JS test suite yet. After touching `engine.js`, verify against the
+control numbers in `docs/spec.md` (routes Петах-Тиква 28/560,
+Йехуд–Кирьят-Оно 14/315, Лод 11/242; 15 cities; 223 employees).
+
+## Data privacy
+
+`HR report.xlsx` contains personal data and is git-ignored — it is never
+committed. The dashboard stores the parsed data in the browser's
+localStorage on the user's machine only.
+
+## History
+
+The project originally shipped as a PyInstaller `.exe` (Python + pywebview).
+That path was abandoned: corporate Defender with Tamper Protection blocks
+unsigned executables and silently ignores local exclusions. The Python
+backend and its pytest suite were removed in July 2026; everything is
+recoverable from git history.
